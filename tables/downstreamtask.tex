@@ -1,0 +1,23 @@
+\begin{table}[h]
+    \centering
+	\caption{Tabel tujuan pengukuran tugas hilir}
+\label{tab:sl_downstream}
+% \renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{ p{4cm} | X }
+	\hline
+	\textbf{Tugas Hilir} & \textbf{Tujuan Pengukuran}  \\
+	\hline
+	\multicolumn{2}{l}{Pemahaman Semantik} \\
+	\hline
+	STS-B \newline \autocite{Cer_2017}& Mengukur sejauh mana model mampu memahami kesamaan makna antara dua kalimat secara utuh (contoh: \textit{The woman is playing the violin — The young lady enjoys listening to the guitar}, makna berbeda, tapi setopik). \\
+	WiC \newline \autocite{pilehvar-camacho-collados-2019-wic} & Menguji kemampuan model dalam menentukan apakah suatu kata memiliki arti yang sama dalam dua kalimat berbeda (contoh: \textit{\underline{Justify} the margins — The end \underline{justfies} the means}, kata memiliki makna berbeda).\\
+	RTE/MNLI \newline \autocite{dagan2006pascal}/\autocite{williams-etal-2018-broad} & Mengukur penalaran logika model dalam menentukan hubungan implikasi antara dua kalimat (contoh MNLI: \textit{Fun for adults and children} --- Hipotesis: \textit{Fun for only children}, hubungan bersifat \textit{contradiction}).\\
+	HellaSwag \newline \autocite{zellers-etal-2019-hellaswag} & Menguji penalaran akal sehat model dalam memilih kelanjutan cerita terlogis (contoh: \textit{A woman is outside with a bucket and a dog avoiding a bath. She...} --- Kelanjutan logis: \textit{gets the dog wet, then it runs away again}).\\
+    \hline
+	\multicolumn{2}{l}{Fungsionalitas Model} \\
+	\hline
+	MMLU \newline \autocite{hendrycks2021mmlu} & Mengukur luasnya pengetahuan umum dan kemampuan pemecahan masalah model di berbagai bidang ilmu (contoh: Pilihan ganda lintas bidang, misal ekonomi: \textit{One of the reasons that the government discourages and regulates monopolies is that...} dengan opsi A--D). \\
+	Perplexity \newline \autocite{jurafsky2023speech} & Mengukur penguasaan bahasa model berdasarkan tingkat kepastiannya dalam memprediksi kata (contoh: Dalam memprediksi kelanjutan kalimat \textit{I always order pizza with cheese and...}, model yang baik memberi probabilitas lebih tinggi ke "\textit{mushrooms}" daripada "\textit{and}").\\
+	\hline
+\end{tabularx}
+\end{table}

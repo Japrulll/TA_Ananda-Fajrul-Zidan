@@ -1,0 +1,23 @@
+% Preamble: \usepackage{tabularx,booktabs,array}
+\begin{table}[h]
+  \centering
+  \caption{Perbandingan penelitian terkait dan penelitian ini}
+  \label{tab:plt_perbandingan}
+  \footnotesize
+  \renewcommand{\arraystretch}{1.25}
+  \setlength{\tabcolsep}{4pt}
+  \newcolumntype{Y}[1]{>{\raggedright\arraybackslash\hsize=#1\hsize}X}
+  \begin{tabularx}{\textwidth}{@{} Y{1.2} Y{0.9} Y{0.7} Y{0.9} Y{1.2} Y{1.1} @{}}
+    \toprule
+    \textbf{Penelitian} & \textbf{Model} & \textbf{Sinyal otak} & \textbf{Pembaruan model} & \textbf{Evaluasi utama} & \textbf{Analisis per lapis dan ROI} \\
+    \midrule
+    \textcite{mischler2024contextual} & 12 LLM & iEEG & Tidak ada & Hierarki kortikal terhadap lapis & Ya (tanpa \textit{tuning}) \\
+    \textcite{schwartz2019inducing} & BERT & fMRI, MEG & \textit{Fine-tuning} & Prediksi aktivitas otak & Tidak dilaporkan \\
+    \textcites{moussa2025improving}{moussa2026generalizability} & Model ucapan & fMRI & \textit{Fine-tuning} & Pemahaman semantik, generalisasi & Ya (per wilayah dan lapis) \\
+    \textcite{negi2025brain} & BERT & fMRI & \textit{Full fine-tuning} & Korelasi \textit{encoding}, GLUE & Tidak (pekerjaan lanjutan) \\
+    \textcite{xiao2026beyond} & LLM 1,5B--72B & fMRI & LoRA & Penalaran deduktif; MMLU untuk kemampuan umum & Sebagian (\textit{predictivity} per lapis, PCA) \\
+    \midrule
+    \textbf{Penelitian ini} & \textbf{LLM teks dekoder 1--8B} & \textbf{fMRI} & \textbf{LoRA (QLoRA)} & \textbf{STS-B, WiC, RTE/MNLI, HellaSwag; MMLU, \textit{perplexity}} & \textbf{Ya (\textit{brain score}, CKA, dekomposisi variansi)} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}

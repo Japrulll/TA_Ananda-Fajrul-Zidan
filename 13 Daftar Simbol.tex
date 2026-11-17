@@ -17,88 +17,89 @@
 
 
 
-% \multicolumn{2}{l}{\textbf{Huruf Yunani (Parameter Model)}} \\
 
-$\alpha$ & Koefisien bobot untuk \textit{loss function}, tingkat signifikansi statistik & 75 \\
-$\beta$ & Koefisien bobot untuk \textit{Binary Cross-Entropy loss} & 75 \\
-$\lambda$ & Koefisien bobot untuk CTC \textit{loss}, parameter regularisasi & 75 \\
-$\theta$ & Parameter model \textit{neural network} & 75 \\
-$\sigma$ & Deviasi standar & 75 \\
-$\mu$ & Rata-rata (\textit{mean}) & 75 \\
-$\epsilon$ & \textit{Token blank}/kosong dalam CTC, konstanta kecil untuk stabilitas numerik & 75 \\
-$\Delta$ & Delta (selisih/perubahan nilai) & 75 \\
-$\pi$ & \textit{Alignment path} dalam CTC & 75 \\
-$\pi_t$ & \textit{Token} pada \textit{timestep} $t$ dalam \textit{alignment path} & 76 \\[1ex]
+% --- Huruf Yunani ---
+$\alpha$ & Faktor skala pembaruan matriks pada LoRA serta tingkat signifikansi pengujian statistik & 14 \\
+$\beta$ & Koefisien bobot objektif sinyal otak pada fungsi \textit{loss} gabungan & 19 \\
+$\Delta_\ell$ & Besar perubahan representasi internal pada lapisan $\ell$ berbasis CKA & 20 \\
+$\Delta s_{\ell,q}$ & Selisih \textit{brain score} antara model hasil \textit{brain-tuning} dan model awal pada lapisan $\ell$ dan ROI $q$ & 20 \\
+$\Delta W$ & Matriks pembaruan bobot berperingkat rendah pada mekanisme LoRA & 14 \\
+$\theta$ & Himpunan parameter model bahasa besar & 23 \\
+$\lambda$ & Parameter regularisasi pada regresi \textit{ridge} & 16 \\
+$\lambda_g$ & Parameter regularisasi untuk kelompok fitur ke-$g$ pada \textit{banded ridge regression} & 17 \\
+$\rho_v$ & Korelasi Pearson antara sinyal BOLD prediksi dan respons asli pada \textit{voxel} $v$ & 17 \\
+$\rho_v^{\text{norm}}$ & \textit{Brain score} pada \textit{voxel} $v$ yang telah dinormalisasi terhadap \textit{noise ceiling} & 17 \\
+$\tau$ & Parameter temperatur pada fungsi objektif kontrastif NT-Xent & 19 \\[1ex]
 
-% \multicolumn{2}{l}{\textbf{Operator Matematis}} \\
+% --- Skalar, Indeks, dan Dimensi ---
+$c_v$ & Nilai \textit{noise ceiling} (batas atas korelasi reliabilitas pengukuran) pada \textit{voxel} $v$ & 17 \\
+$c^*$ & Kandidat jawaban terpilih dengan rerata \textit{log-likelihood} tertinggi pada tugas pilihan ganda & 23 \\
+$d$ & Dimensi masukan matriks bobot proyeksi model & 14 \\
+$d_k$ & Dimensi vektor \textit{key} pada mekanisme \textit{scaled dot-product attention} & 13 \\
+$d_q$ & Jarak kortikal atau urutan hierarki ROI ke-$q$ dari korteks auditori primer & 21 \\
+$f$ & Porsi variansi keselarasan otak yang dijelaskan oleh fitur teks tingkat rendah & 22 \\
+$h$ & Jumlah \textit{attention head} pada mekanisme \textit{multi-head attention} & 13 \\
+$k$ & Dimensi keluaran matriks bobot model atau indeks kata ke-$k$ pada stimulus teks & 14 \\
+$\ell$ & Indeks lapisan pada arsitektur \textit{Transformer} & 20 \\
+$\ell^*$ & Lapisan tengah target yang dipilih untuk ekstraksi fitur dan pemasangan LoRA ($\ell \le \ell^*$) & 6 \\
+$L$ & Jumlah total lapisan pada model bahasa besar & 14 \\
+$N$ & Jumlah token pada korpus uji \textit{perplexity}, jumlah partisipan, atau jumlah lapisan tumpukan & 14 \\
+$N_b$ & Ukuran \textit{batch} pelatihan pada perhitungan fungsi objektif & 18 \\
+$N_{\text{kondisi}}, N_\beta, N_{\text{obj}}, N_{\text{seed}}$ & Jumlah variasi kondisi pelatihan, bobot $\beta$, objektif otak, dan \textit{random seed} pada estimasi anggaran GPU & 47 \\
+$p$ & Jumlah dimensi fitur stimulus berpenundaan atau nilai probabilitas statistik (\textit{p-value}) & 16 \\
+$q$ & Indeks wilayah minat otak (\textit{Region of Interest}, ROI) atau ambang koreksi FDR & 20 \\
+$r$ & Peringkat (\textit{rank}) dekomposisi matriks berperingkat rendah pada LoRA & 14 \\
+$R^2_{\text{rendah}}, R^2_{\text{gabungan}}$ & Koefisien determinasi prediksi otak dari fitur tingkat rendah saja dan dari model fitur gabungan & 22 \\
+$s_{\ell,q}$ & Nilai \textit{brain score} pada lapisan model $\ell$ dan wilayah otak $q$ & 20 \\
+$\tilde{s}_{\ell,q}$ & Nilai \textit{brain score} yang telah dinormalisasi antar-lapisan ke rentang $[0, 1]$ & 21 \\
+$t$ & Indeks titik waktu atau \textit{repetition time} (TR) ke-$t$ & 16 \\
+$T$ & Jumlah total titik waktu (TR) dalam rekaman fMRI & 16 \\
+$t_{\text{run}}^{(m)}$ & Estimasi durasi waktu komputasi per satu kali pelatihan (\textit{run}) untuk model $m$ & 47 \\
+$T_{\text{total}}, T_{\text{eval}}$ & Total anggaran waktu komputasi GPU dan waktu evaluasi keseluruhan & 47 \\
+$v$ & Indeks \textit{voxel} otak pada rekaman fMRI & 17 \\
+$V$ & Jumlah total \textit{voxel} otak yang dianalisis & 16 \\[1ex]
 
-$\nabla$ atau $\partial$ & Operator gradien atau turunan parsial & 75 \\
-$\sum$ & Operator penjumlahan & 75 \\
-$\prod$ & Operator perkalian & 75 \\
-$\int$ & Operator integral & 75 \\
-argmax & Argumen yang memaksimalkan fungsi & 76 \\
-$\sim$ & Terdistribusi menurut & 75 \\
-$\to$ & Menuju atau konvergen ke & 75 \\[1ex]
+% --- Vektor, Matriks, dan Himpunan ---
+$A, B$ & Matriks faktor berperingkat rendah pada adapter LoRA & 14 \\
+$b$ & Vektor bias pada kepala proyeksi linear ke ruang \textit{voxel} & 18 \\
+$\mathcal{C}$ & Himpunan kandidat pilihan jawaban pada evaluasi tugas pilihan ganda & 23 \\
+$D$ & Korpus teks uji pada evaluasi \textit{perplexity} & 23 \\
+$d_t$ & Token ke-$t$ pada korpus teks uji $D$ & 23 \\
+$h_k^{(\ell^*)}$ & Vektor \textit{hidden state} lapisan $\ell^*$ pada token terakhir kata ke-$k$ & 18 \\
+$I$ & Matriks identitas pada persamaan \textit{ridge regression} & 16 \\
+$Q, K, V$ & Matriks \textit{Query}, \textit{Key}, dan \textit{Value} pada mekanisme \textit{self-attention} & 13 \\
+$W_0$ & Matriks bobot awal model \textit{pretrained} yang dibekukan pada LoRA & 14 \\
+$W_{\text{baru}}$ & Matriks bobot efektif hasil penjumlahan $W_0$ dan pembaruan LoRA & 14 \\
+$W_i^Q, W_i^K, W_i^V, W^O$ & Matriks proyeksi linear \textit{query}, \textit{key}, \textit{value} pada \textit{head} ke-$i$ serta proyeksi keluaran atensi & 13 \\
+$W_p$ & Matriks bobot kepala proyeksi linear dari representasi model ke ruang \textit{voxel} & 18 \\
+$\hat{W}$ & Matriks bobot estimasi hasil \textit{ridge regression} pada \textit{encoding model} & 16 \\
+$x_t$ & Vektor fitur stimulus pada TR ke-$t$ setelah proses \textit{downsampling} & 16 \\
+$X$ & Matriks fitur stimulus berpenundaan ($T \times p$) atau matriks representasi pada perhitungan CKA & 16 \\
+$X_t^{\text{delay}}$ & Vektor fitur stimulus gabungan dengan penundaan hemodinamik FIR pada TR ke-$t$ & 16 \\
+$X_\ell^{\text{awal}}, X_\ell^{\text{tuned}}$ & Matriks representasi lapisan $\ell$ pada cerita uji sebelum dan sesudah \textit{brain-tuning} & 20 \\
+$Y$ & Matriks respons sinyal BOLD asli ($T \times V$) atau matriks representasi pembanding pada CKA & 16 \\
+$y_t, \hat{y}_t$ & Vektor respons sinyal BOLD asli dan hasil prediksi model pada waktu ke-$t$ & 18 \\
+$y_{t,v}, \hat{y}_{t,v}$ & Nilai sinyal BOLD asli dan hasil prediksi pada waktu ke-$t$ dan \textit{voxel} ke-$v$ & 17 \\
+$\bar{y}_v, \bar{\hat{y}}_v$ & Rata-rata temporal sinyal BOLD asli dan prediksi pada \textit{voxel} ke-$v$ & 17 \\[1ex]
 
-% \multicolumn{2}{l}{\textbf{Fungsi \textit{Loss} dan Kerugian}} \\
+% --- Fungsi Objektif, Hipotesis, dan Metrik ---
+$\mathrm{COM}_q$ & Pusat massa lapisan (\textit{center of mass}) yang paling selaras dengan ROI ke-$q$ & 21 \\
+$H$ & Skor keselarasan hierarki antara pusat massa lapisan model dan jarak kortikal ROI & 21 \\
+$H_0, H_1$ & Hipotesis nol dan hipotesis alternatif pada pengujian statistik & 6 \\
+$\mathcal{L}_{\text{cos}}$ & Fungsi objektif \textit{Cosine Loss} berbasis kemiripan kosinus & 18 \\
+$\mathcal{L}_{\text{LM}}$ & Fungsi objektif \textit{cross-entropy} pemodelan bahasa (\textit{next-word prediction}) & 19 \\
+$\mathcal{L}_{\text{MSE}}$ & Fungsi objektif \textit{Mean Squared Error} & 18 \\
+$\mathcal{L}_{\text{NT-Xent}}$ & Fungsi objektif kontrastif \textit{Normalized Temperature-Scaled Cross-Entropy} & 19 \\
+$\mathcal{L}_{\text{otak}}$ & Komponen fungsi objektif penyelarasan sinyal otak & 19 \\
+$\mathcal{L}_{\text{total}}$ & Fungsi objektif gabungan antara bahasa dan sinyal otak & 19 \\
+$\text{PPL}(D)$ & Nilai \textit{perplexity} model pada korpus uji $D$ & 23 \\[1ex]
 
-$\mathcal{L}$ & Fungsi \textit{loss} (kerugian) & 75 \\
-$\mathcal{L}_{total}$ & Total \textit{loss function} & 75 \\
-$\mathcal{L}_{adversarial}$ atau $\mathcal{L}_{adv}$ & \textit{Adversarial loss} & 75 \\
-$\mathcal{L}_{reconstruction}$ & \textit{Reconstruction loss} & 75 \\
-$\mathcal{L}_{L1}$ & L1 \textit{loss} (\textit{Mean Absolute Error}) & 75 \\
-$\mathcal{L}_{L2}$ & L2 \textit{loss} (\textit{Mean Squared Error}) & 75 \\
-$\mathcal{L}_{CTC}$ & CTC (\textit{Connectionist Temporal Classification}) \textit{loss} & 75 \\
-$\mathcal{L}_{perceptual}$ & \textit{Perceptual loss} & 75 \\
-$\mathcal{L}_{pixel}$ & \textit{Pixel-wise loss} & 75 \\
-$\mathcal{L}_{BCE}$ & \textit{Binary Cross-Entropy loss} & 75 \\
-$\mathcal{L}_{GAN}$ & GAN \textit{loss} & 75 \\
-$\mathcal{L}_{cycle}$ & \textit{Cycle consistency loss} & 75 \\[1ex]
-
-% \multicolumn{2}{l}{\textbf{Variabel Model dan Komponen GAN}} \\
-
-$G$ & \textit{Generator} dalam GAN & 75 \\
-$D$ & \textit{Discriminator} dalam GAN & 75 \\
-$G(z)$ & \textit{Output} dari \textit{generator} dengan \textit{input} $z$ & 75 \\
-$D(x)$ & \textit{Output} dari \textit{discriminator} dengan \textit{input} $x$ & 75 \\
-$G_{A \to B}$ & \textit{Generator} dari domain $A$ ke $B$ & 75 \\
-$G_{B \to A}$ & \textit{Generator} dari domain $B$ ke $A$ & 75 \\
-$V(D, G)$ & Fungsi nilai (\textit{value function}) dalam GAN & 75 \\
-$x$ & Sampel data asli, \textit{input} citra & 75 \\
-$y$ & Label atau \textit{ground truth}, kondisi dalam \textit{conditional GAN} & 75 \\
-$z$ & \textit{Noise vector} atau representasi laten \\[1ex]
-
-% \multicolumn{2}{l}{\textbf{Distribusi Probabilitas}} \\
-
-$\mathbb{E}$ & Ekspektasi atau nilai harapan & 75 \\
-$p_{data}$ & Distribusi data asli & 75 \\
-$p_z$ & Distribusi \textit{prior} (\textit{noise}) & 75 \\
-$p(y|x)$ & Probabilitas bersyarat \textit{output} $y$ \textit{given input} $x$ & 75 \\
-$p_t(\pi_t|x)$ & Probabilitas \textit{token} pada \textit{timestep} $t$ \\[1ex]
-
-% \multicolumn{2}{l}{\textbf{Fungsi dan Transformasi CTC}} \\
-
-$\mathcal{B}$ & Fungsi penciutan (\textit{collapse function}) dalam CTC & 75 \\
-$\mathcal{B}^{-1}$ & Fungsi invers penciutan dalam CTC & 75 \\
-$T$ & Jumlah \textit{timestep} atau panjang \textit{sequence} \\[1ex]
-
-% \multicolumn{2}{l}{\textbf{Metrik Jarak dan Norma}} \\
-
-$|x - G(y)|_1$ & L1 \textit{distance} antara \textit{ground truth} dan \textit{generated image} & 75 \\
-$|x - G(y)|_2$ & L2 \textit{distance} antara \textit{ground truth} dan \textit{generated image} & 75 \\
-$N \times N$ & Ukuran \textit{patch} dalam PatchGAN \\[1ex]
-
-% \multicolumn{2}{l}{\textbf{Statistik dan Analisis}} \\
-
-$d$ & Cohen's $d$ (\textit{effect size}) & 75 \\
-$n$ & Jumlah sampel & 75 \\
-$p$ & \textit{p-value} (nilai probabilitas statistik) & 75 \\
-$r$ & Koefisien korelasi & 75 \\
-$R^2$ & Koefisien determinasi \\[1ex]
-
-% \multicolumn{2}{l}{\textbf{Notasi Kompleksitas Komputasi}} \\
-
-$O(n)$ & Notasi Big-O untuk kompleksitas linear & 75 \\
-$O(n^2)$ & Notasi Big-O untuk kompleksitas kuadratik & 75 \\
+% --- Operator Matematis ---
+$\arg\max$ & Argumen yang memaksimalkan nilai suatu fungsi & 23 \\
+$\mathrm{CKA}(X, Y)$ & Nilai \textit{Centered Kernel Alignment} linear antara matriks $X$ dan $Y$ & 20 \\
+$\mathrm{corr}(\cdot, \cdot)$ & Fungsi korelasi linear Pearson & 21 \\
+$\mathrm{sim}(\cdot, \cdot)$ & Fungsi kemiripan kosinus antarvektor pada perhitungan NT-Xent & 19 \\
+$\lVert \cdot \rVert, \lVert \cdot \rVert_2, \lVert \cdot \rVert_F$ & Norma Euklides vektor dan norma Frobenius matriks & 18 \\
+$(\cdot)^\top, (\cdot)^{-1}$ & Operasi transpos matriks dan invers matriks & 13 \\
 
 \end{longtable}

@@ -1,0 +1,33 @@
+\begin{table}[h]
+    \centering
+	\caption{Tabel spesifikasi dataset fMRI \autocite{lebel2023natural}}
+\label{tab:sl_naturalistik}
+% \renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{p{2cm} | X }
+	\hline
+	\textbf{Kategori} 	& \textbf{Spesifikasi} 	 \\
+	\hline
+	Partisipan 	& 8 orang dewasa sehat (3 wanita, 5 pria; usia 21–34 tahun). 	 \\
+	Stimulus \newline Standar	& 27 cerita narasi bahasa Inggris dari podcast \textit{The Moth} ($\sim$6,4 jam / 370 menit total per partisipan; 26 cerita unik + 1 cerita uji yang diulang di 5 sesi)	 \\
+	\textit{Extended Dataset}	& Tambahan 55 cerita (termasuk dari \textit{Modern Love}) untuk 3 partisipan (UTS01, UTS02, UTS03), menghasilkan total hingga 82 cerita ($\sim$15,8 jam / 949 menit BOLD fMRI per subjek)		 \\
+    Format \newline Data & 
+    \begin{minipage}[t]{\linewidth}
+        \begin{itemize}[nosep, leftmargin=*]
+            \item Data fMRI: File NIFTI 4D (mentah \& \textit{preprocessed}) serta HDF5.
+            \item Audio: File WAV pada \textit{sampling rate} 44,1 kHz.
+            \item Transkrip: File TextGrid dengan penjajaran (\textit{alignment}) otomatis dan manual pada skala kata dan fonem.
+            \item Anatomi: T1w MPRAGE ($1\text{ mm}^3$) dan \textit{mesh} permukaan 3D (\textit{hand-corrected}).
+        \end{itemize}
+    \end{minipage} \\
+    Parameter fMRI & 
+    \begin{minipage}[t]{\linewidth}
+        \begin{itemize}[nosep, leftmargin=*]
+            \item TR (Repetition Time): 2,0 detik.
+            \item TE (Echo Time): 30,8 ms.
+            \item Resolusi Voxel: $2,6\text{ mm} \times 2,6\text{ mm} \times 2,6\text{ mm}$.
+        \end{itemize}
+    \end{minipage} \\
+    Kode \newline Analisis & Skrip Python bawaan (di GitHub) untuk Ridge Regression (L2-regularized) \\
+	\hline
+\end{tabularx}
+\end{table}

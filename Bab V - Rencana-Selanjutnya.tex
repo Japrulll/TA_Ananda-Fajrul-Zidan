@@ -1,0 +1,169 @@
+% ==========================================
+% BAB V RENCANA SELANJUTNYA
+% ==========================================
+\chapter{RENCANA SELANJUTNYA}
+\label{chap:rencana-selanjutnya}
+% Jelaskan secara detail langkah-langkah rencana selanjutnya, hal-hal yang diperlukan atau akan disiapkan, dan risiko dan mitigasinya, yang meliputi:
+% \begin{enumerate}
+% \item	Rencana implementasi, termasuk alat dan bahan yang diperlukan, lingkungan, konfigurasi, biaya, dan sebagainya.
+% \item	Desain pengujian dan evaluasi, misalnya metode verifikasi dan validasi.
+% \item	Analisis risiko dan mitigasi, misalnya tindakan selanjutnya jika ada yang tidak berjalan sesuai rencana.
+% \end{enumerate}
+
+Bab ini memaparkan rencana operasional untuk merealisasikan rancangan solusi pada Bab \ref{chap:desain-solusi}. Cakupan pembahasan meliputi spesifikasi lingkungan komputasi dan tahapan implementasi, estimasi anggaran waktu GPU, protokol pengujian verifikasi serta validasi statistik beserta keterbatasannya, jadwal pelaksanaan tugas akhir, dan analisis risiko beserta rencana mitigasinya.
+
+% ============================================================================================
+\section{Rencana Lingkungan dan Tahapan Implementasi}
+\label{sec:rs_implementasi}
+
+\subsection{Infrastruktur Komputasi, Data, dan Pustaka Perangkat Lunak}
+\label{sub:rs_lingkungan}
+
+Seluruh proses pelatihan dan evaluasi dirancang agar berjalan tanpa biaya tambahan (gratis) pada platform \textbf{Kaggle} sesuai batasan KNF-01:
+\begin{itemize}
+  \item \textbf{Sumber daya komputasi dan biaya.} Eksperimen memanfaatkan akselerator GPU bawaan Kaggle berkapasitas VRAM 16 GB, yaitu NVIDIA Tesla P100 (16 GB) atau konfigurasi dual NVIDIA Tesla T4 ($2 \times 16\text{ GB}$), dengan kuota penggunaan mingguan standar sekitar 30 jam GPU dan batas durasi maksimum 9--12 jam per sesi. Biaya operasional utama adalah Rp0 (gratis); layanan komputasi awan berbayar seperti Google Colab Pro atau penyewaan GPU eksternal hanya disiapkan sebagai cadangan darurat apabila kuota mingguan tidak mencukupi pada fase akhir.
+  \item \textbf{Ketersediaan bobot model.} Bobot model dasar \textit{pretrained} (Qwen3-4B sebagai model utama, Llama-3-8B atau Llama-3.1-8B sebagai model pembanding, dan Mistral-7B sebagai model opsional) diunduh langsung melalui repositori \textbf{Kaggle Models} atau \textbf{Hugging Face Hub} sehingga tidak membebani penyimpanan lokal maupun waktu unggah.
+  \item \textbf{Akuisisi dan format dataset.} Dataset fMRI naturalistik \textcite{lebel2023natural} diunduh dari repositori publik OpenNeuro (\texttt{ds003020}) pada bagian data turunan (\textit{derivatives}) yang telah melalui prapemrosesan permukaan korteks serta transkrip penyelarasan waktu (\texttt{TextGrid}/JSON). Berkas respons BOLD berformat HDF5/NumPy dipetakan ke memori secara bertahap per cerita dan per partisipan untuk menjaga konsumsi RAM tetap rendah.
+  \item \textbf{Tumpukan perangkat lunak (\textit{software stack}).} Implementasi dibangun menggunakan bahasa pemrograman Python dengan pustaka utama \textbf{PyTorch} ($\ge 2{,}2$), \textbf{Hugging Face Transformers} ($\ge 4{,}45$), \textbf{PEFT} ($\ge 0{,}12$) untuk konfigurasi LoRA, \textbf{bitsandbytes} ($\ge 0{,}43$) untuk kuantisasi 4-bit QLoRA apabila diperlukan pada model 8B, serta \textbf{scikit-learn} dan \textbf{himawari/himalaya} (atau implementasi matriks terregularisasi PyTorch) untuk \textit{ridge} dan \textit{banded ridge regression}. Seluruh versi pustaka, berkas konfigurasi YAML, dan \textit{random seed} dicatat otomatis pada setiap \textit{run} (KNF-02, KNF-07).
+\end{itemize}
+
+\subsection{Tahapan Implementasi dan Konfigurasi Awal}
+\label{sub:rs_tahapan}
+
+Implementasi dibagi ke dalam empat tahap berurutan:
+\begin{enumerate}
+  \item \textbf{Tahap 1: Penyiapan \textit{pipeline} data dan \textit{baseline} model awal.} Membangun modul pembacaan transkrip dan respons BOLD \textcite{lebel2023natural}, partisi 22/4/1 cerita, perhitungan \textit{noise ceiling} $c_v$, ekstraksi token terakhir, \textit{downsampling} Lanczos, dan penundaan FIR. Pada tahap ini dilakukan pemindaian \textit{brain score} seluruh lapisan model awal untuk menetapkan $\ell^*$ dan menghasilkan tolok ukur awal ($s^{\text{awal}}_{\ell,q}$, $X^{\text{awal}}_\ell$, dan skor tugas hilir awal).
+  \item \textbf{Tahap 2: Uji pendahuluan (\textit{pilot run}) dan kalibrasi \textit{hyperparameter}.} Menjalankan pelatihan skala awal pada model utama Qwen3-4B untuk mengukur waktu eksekusi aktual serta puncak penggunaan VRAM. Konfigurasi awal mengacu pada \textcite{xiao2026beyond} dan \textcite{negi2025brain}, yakni optimizer AdamW dengan laju belajar awal sekitar $1 \times 10^{-4}$ (\textit{cosine decay} dan \textit{warmup} 5--10\%), peringkat LoRA $r \in \{8, 16\}$ dengan $\alpha = 2r$, serta temperatur NT-Xent $\tau = 0{,}1$. Hasil uji pendahuluan digunakan untuk mengunci rentang titik sapuan $\beta$ dan memutuskan penggunaan LoRA 16-bit atau QLoRA 4-bit pada model 8B.
+  \item \textbf{Tahap 3: Eksekusi eksperimen utama dan kontrol.} Menjalankan pelatihan lintas tiga kondisi (bahasa saja $\beta=0$, fMRI asli $\beta>0$, dan fMRI acak \textit{TR-shuffled}) pada dua objektif utama (Cosine dan NT-Xent), beberapa nilai $\beta$, serta pengulangan \textit{random seed} untuk Qwen3-4B dan Llama-3/3.1-8B, ditambah kontrol sekunder \textit{block-shuffled} pada konfigurasi terpilih.
+  \item \textbf{Tahap 4: Evaluasi hilir dan analisis internal.} Menjalankan \textit{linear probing} 5 \textit{seed} (STS-B, WiC, RTE/MNLI), evaluasi deterministik (HellaSwag, MMLU, \textit{Perplexity}), serta perhitungan $\Delta s_{\ell,q}$, $1-\text{CKA}$, skor hierarki $H$, dan dekomposisi variansi $f$. Komponen opsional (ablasi MSE, analisis per \textit{attention head} KF-12, model Mistral-7B, dan dataset \textit{Narratives}) dikerjakan hanya apabila kuota dan waktu tersisa setelah komponen inti tuntas (KNF-08).
+\end{enumerate}
+
+\subsection{Estimasi Anggaran Waktu GPU}
+\label{sub:rs_anggaran_gpu}
+
+Kebutuhan total waktu komputasi dihitung secara sistematis berdasarkan hasil pengukuran waktu per \textit{run} ($t_{\text{run}}$) pada uji pendahuluan Qwen3-4B menggunakan Persamaan \ref{eq:anggaran_gpu}:
+\begin{equation}
+  T_{\text{total}} = \sum_{m \in \mathcal{M}} \left( N_{\text{kondisi}} \times N_{\beta} \times N_{\text{obj}} \times N_{\text{seed}} \times t_{\text{run}}^{(m)} \right) + T_{\text{eval}}
+  \label{eq:anggaran_gpu}
+\end{equation}
+\eqcaption{Persamaan Estimasi Total Anggaran Waktu GPU}
+
+Dengan konfigurasi inti $N_{\text{kondisi}} = 3$ (bahasa saja $\beta=0$ dihitung satu kali per \textit{seed}, sementara fMRI asli dan acak dijalankan pada $N_{\beta} = 4$ nilai $\beta$ representatif setelah penyaringan awal sapuan), $N_{\text{obj}} = 2$ objektif utama (Cosine dan NT-Xent), $N_{\text{seed}} = 3$ pengulangan pada $N_{\text{subjek}} = 8$ partisipan (atau pelatihan gabungan lintas partisipan dengan kepala proyeksi $W_p^{(s)}$ per partisipan untuk efisiensi waktu), total waktu pelatihan dan evaluasi ($T_{\text{eval}}$) dikelola agar selaras dengan kuota mingguan Kaggle ($\approx 30\text{ jam/minggu}$). % TODO: masukkan angka t_run aktual (dalam menit/jam) setelah pilot run Qwen3-4B selesai dijalankan
+
+% ============================================================================================
+\section{Rancangan Pengujian Verifikasi dan Validasi Statistik}
+\label{sec:rs_pengujian}
+
+\subsection{Pengujian Verifikasi Perangkat Lunak dan Alur Eksperimen}
+\label{sub:rs_verifikasi}
+
+Sebelum menyimpulkan hasil eksperimen, seluruh komponen perangkat lunak melewati empat pengujian verifikasi (\textit{sanity checks}) untuk menjamin integritas teknis:
+\begin{enumerate}
+  \item \textbf{Verifikasi bebas kebocoran antarcerita.} Pengujian otomatis memeriksa irisan pengenal cerita antara partisi latih (22 cerita), validasi (4 cerita), dan uji (1 cerita) sehingga himpunan irisan bernilai kosong pada seluruh tahap ekstraksi fitur, pelatihan LoRA, dan regresi \textit{encoding}.
+  \item \textbf{Verifikasi ekuivalensi batas $\beta = 0$.} Memastikan bahwa menjalankan alur \textit{brain-tuning} dengan $\beta = 0$ menghasilkan lintasan nilai \textit{loss}, gradien adapter LoRA, dan bobot akhir yang identik secara numerik (dalam toleransi presisi \textit{floating-point}) dengan kondisi kontrol pelatihan bahasa saja.
+  \item \textbf{Verifikasi determinisme dan reprodusibilitas \textit{seed}.} Menjalankan ulang satu konfigurasi singkat dengan \textit{random seed} yang sama untuk memastikan nilai \textit{loss} dan skor evaluasi terulang secara konsisten (KNF-02).
+  \item \textbf{Verifikasi kewajaran \textit{brain score} model awal.} Memeriksa bahwa \textit{encoding model} pada LLM awal menghasilkan korelasi positif yang bermakna pada jaringan bahasa kortikal serta pola hierarki lapisan yang selaras dengan temuan \textcite{mischler2024contextual} sebelum pembaruan bobot dilakukan.
+\end{enumerate}
+
+\subsection{Validasi Hipotesis, Uji Statistik, dan Keterbatasan}
+\label{sub:rs_validasi}
+
+Pengujian hipotesis (H1--H5) dilakukan dengan prosedur statistik yang ketat:
+\begin{itemize}
+  \item \textbf{Uji statistik dan koreksi uji ganda.} Perbandingan antar-kondisi menggunakan \textbf{uji t berpasangan} (\textit{paired t-test}) satu arah atau dua arah sesuai rumusan hipotesis pada tingkat signifikansi $\alpha = 0{,}05$ \autocite{xiao2026beyond}. Untuk pengujian lintas banyak lapisan, banyak ROI, atau beberapa tugas hilir sekaligus, nilai-$p$ dikoreksi menggunakan prosedur \textbf{Benjamini--Hochberg False Discovery Rate (FDR)} pada tingkat $q = 0{,}05$. Unit sampel berpasangan adalah pengulangan \textit{random seed} ($N_{\text{seed}} = 3\text{--}5$) untuk metrik tingkat model ($\Delta_\ell$ dan skor tugas hilir), serta subjek partisipan ($N = 8$) untuk metrik berbasis aktivitas otak ($\Delta s_{\ell,q}$ dan porsi variansi $f$).
+  \item \textbf{Definisi operasional ambang H2.} Pada pengujian H2, penurunan fungsionalitas model didefinisikan sebagai "penurunan berarti" apabila rerata akurasi MMLU turun lebih dari $1{,}5$ poin persentase atau nilai \textit{Perplexity} meningkat lebih dari $5\%$ secara relatif dibandingkan kondisi kontrol bahasa saja ($\beta = 0$) pada \textit{seed} yang sama.
+  \item \textbf{Keterbatasan metodologis.} Interpretasi hasil tetap memperhatikan tiga batasan desain: (1) jumlah partisipan pada dataset \textcite{lebel2023natural} terbatas pada 8 orang sehingga daya uji statistik antarpartisipan bersifat moderat; (2) pemasangan LoRA hanya hingga lapisan $\ell^*$ menyebabkan perubahan pada lapisan $\ell > \ell^*$ bersifat tak langsung; dan (3) metrik skor hierarki $H$ merupakan adaptasi dari studi elektrofisiologi iEEG \autocite{mischler2024contextual} ke resolusi spasial-temporal fMRI sehingga diperlakukan sebagai analisis eksploratori.
+\end{itemize}
+
+% ============================================================================================
+\section{Jadwal Pelaksanaan Tugas Akhir}
+\label{sec:rs_jadwal}
+
+Pelaksanaan tugas akhir direncanakan berlangsung selama 16 minggu (satu semester akademik) yang terbagi menjadi tujuh paket kerja utama sebagaimana disajikan pada Tabel \ref{tab:rs_jadwal}.
+
+\begin{table}[h]
+  \centering
+  \caption{Rencana jadwal pelaksanaan tugas akhir selama 16 minggu}
+  \label{tab:rs_jadwal}
+  \small
+  \setlength{\tabcolsep}{2.5pt}
+  \begin{tabularx}{\textwidth}{X | *{15}{>{\centering\arraybackslash}p{0.34cm} |} >{\centering\arraybackslash}p{0.34cm}}
+    \hline
+    \multirow{2}{=}{\textbf{Kegiatan Utama}} & \multicolumn{16}{c}{\textbf{Minggu ke-}} \\
+    \cline{2-17}
+     & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 \\
+    \hline
+    Penyiapan lingkungan Kaggle, unduh dataset \textcite{lebel2023natural}, dan \textit{pipeline} prapemrosesan fitur & \cellcolor{gray!50} & \cellcolor{gray!50} & & & & & & & & & & & & & & \\
+    \hline
+    Ekstraksi \textit{baseline} model awal, penetapan $\ell^*$, dan pengujian verifikasi alur & & \cellcolor{gray!50} & \cellcolor{gray!50} & & & & & & & & & & & & & \\
+    \hline
+    Uji pendahuluan (\textit{pilot run}) Qwen3-4B dan sapuan bobot $\beta$ (H2) & & & & \cellcolor{gray!50} & \cellcolor{gray!50} & \cellcolor{gray!50} & & & & & & & & & & \\
+    \hline
+    Pelatihan utama (Cosine \& NT-Xent) beserta tiga kondisi kontrol lintas \textit{seed} pada Qwen3-4B & & & & & & \cellcolor{gray!50} & \cellcolor{gray!50} & \cellcolor{gray!50} & & & & & & & & \\
+    \hline
+    Replikasi eksperimen utama pada model pembanding (Llama-3/3.1-8B) & & & & & & & & \cellcolor{gray!50} & \cellcolor{gray!50} & \cellcolor{gray!50} & & & & & & \\
+    \hline
+    Evaluasi tugas hilir (\textit{probing} 5 \textit{seed}), analisis internal (CKA, ROI, $H$, $f$), dan uji statistik & & & & & & & & & & \cellcolor{gray!50} & \cellcolor{gray!50} & \cellcolor{gray!50} & \cellcolor{gray!50} & & & \\
+    \hline
+    Eksperimen opsional (KNF-08) serta penyusunan laporan akhir dan sidang & & & & & & & & & & & & & \cellcolor{gray!50} & \cellcolor{gray!50} & \cellcolor{gray!50} & \cellcolor{gray!50} \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+% \begin{table}[h]
+%   \centering
+%   \caption{Rencana jadwal pelaksanaan tugas akhir selama 16 minggu}
+%   \label{tab:rs_jadwal}
+%   \small
+%   \begin{tabularx}{\textwidth}{p{0.8cm} | p{5.5cm} | *{16}{c}}
+%     \hline
+%     \textbf{No} & \textbf{Kegiatan Utama} & \multicolumn{16}{c}{\textbf{Minggu ke-}} \\
+%     \cline{3-18}
+%      & & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} & \textbf{7} & \textbf{8} & \textbf{9} & \textbf{10} & \textbf{11} & \textbf{12} & \textbf{13} & \textbf{14} & \textbf{15} & \textbf{16} \\
+%     \hline
+%     1 & Penyiapan lingkungan Kaggle, unduh dataset \textcite{lebel2023natural}, dan \textit{pipeline} prapemrosesan fitur & $\blacksquare$ & $\blacksquare$ & & & & & & & & & & & & & & \\
+%     \hline
+%     2 & Ekstraksi \textit{baseline} model awal, penetapan $\ell^*$, dan pengujian verifikasi alur & & $\blacksquare$ & $\blacksquare$ & & & & & & & & & & & & & \\
+%     \hline
+%     3 & Uji pendahuluan (\textit{pilot run}) Qwen3-4B dan sapuan bobot $\beta$ (H2) & & & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & & & & & & & & & & \\
+%     \hline
+%     4 & Pelatihan utama (Cosine \& NT-Xent) beserta tiga kondisi kontrol lintas \textit{seed} pada Qwen3-4B & & & & & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & & & & & & & & \\
+%     \hline
+%     5 & Replikasi eksperimen utama pada model pembanding (Llama-3/3.1-8B) & & & & & & & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & & & & & & \\
+%     \hline
+%     6 & Evaluasi tugas hilir (\textit{probing} 5 \textit{seed}), analisis internal (CKA, ROI, $H$, $f$), dan uji statistik & & & & & & & & & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & & & \\
+%     \hline
+%     7 & Eksperimen opsional (KNF-08) serta penyusunan laporan akhir dan sidang & & & & & & & & & & & & & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ & $\blacksquare$ \\
+%     \hline
+%   \end{tabularx}
+% \end{table}
+
+% ============================================================================================
+\section{Analisis Risiko dan Rencana Mitigasi}
+\label{sec:rs_risiko}
+
+Pelaksanaan eksperimen berbasis pelatihan LLM dan analisis fMRI pada platform komputasi terbatas memiliki sejumlah risiko teknis maupun metodologis. Tabel \ref{tab:rs_risiko} merangkum identifikasi risiko beserta langkah mitigasi yang disiapkan.
+
+\begin{table}[h]
+  \centering
+  \caption{Identifikasi risiko pelaksanaan tugas akhir dan rencana mitigasinya}
+  \label{tab:rs_risiko}
+  \small
+  \begin{tabularx}{\textwidth}{p{2.9cm} | p{1.6cm} | p{3.6cm} | X}
+    \hline
+    \textbf{Risiko} & \textbf{Dampak} & \textbf{Penyebab Potensial} & \textbf{Rencana Mitigasi} \\
+    \hline
+    Kuota mingguan atau batas durasi sesi Kaggle habis & Tinggi & Banyaknya kombinasi kondisi, nilai $\beta$, objektif, dan \textit{seed} melebihi batas 9--12 jam/sesi atau 30 jam/minggu. & Menerapkan penyimpanan \textit{checkpoint} otomatis setiap akhir \textit{epoch} ke Kaggle Output/Dataset agar pelatihan dapat dilanjutkan lintas sesi, serta memprioritaskan penyelesaian penuh pada model utama (Qwen3-4B) terlebih dahulu. \\
+    \hline
+    Memori GPU 16 GB tidak mencukupi (\textit{Out of Memory}) & Tinggi & Ukuran aktivasi dan gradien pada model 8B (Llama-3/3.1-8B) atau perhitungan matriks NT-Xent melampaui VRAM 16 GB. & Mengaktifkan kuantisasi 4-bit QLoRA (\texttt{bitsandbytes}), mengaktifkan \textit{gradient checkpointing}, memperkecil ukuran \textit{micro-batch} dengan \textit{gradient accumulation}, serta memendekkan panjang jendela urutan konteks. \\
+    \hline
+    Koordinat spasial ROI atau data ulangan \textit{noise ceiling} tidak lengkap & Sedang & Perbedaan format berkas atlas permukaan korteks antarpartisipan pada berkas turunan dataset. & Menggunakan urutan hierarki ROI \textit{a priori} berdasarkan literatur (auditori primer $\rightarrow$ STS $\rightarrow$ MTG/ITG \& ATL $\rightarrow$ IFG) untuk perhitungan skor $H$, serta menggunakan korelasi Pearson mentah $\rho_v$ apabila $c_v$ tidak tersedia. \\
+    \hline
+    Skor tugas hilir semantik tidak meningkat secara signifikan & Sedang & Sinyal BOLD fMRI beresolusi temporal rendah ($2{,}0\text{ s}$) memberi sinyal supervisi yang halus bagi LLM berukuran miliaran parameter. & Analisis internal pada RM3 (pergeseran lapisan CKA, perubahan ROI, dan penurunan porsi fitur tingkat rendah $f$) tetap memberikan temuan ilmiah yang bernilai; hasil nol (\textit{null result}) pada tugas hilir dilaporkan secara objektif beserta analisis penyebabnya. \\
+    \hline
+    Waktu pengerjaan mendekati batas akhir semester & Sedang & Keterlambatan pada tahap kalibrasi awal atau antrean komputasi di akhir periode eksperimen. & Memangkas seluruh komponen opsional sesuai KNF-08, meliputi ablasi per \textit{attention head} (KF-12), model tambahan (Mistral-7B), ablasi objektif sekunder MSE, dan validasi lintas dataset \textit{Narratives}. \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+Dengan adanya rancangan tahapan implementasi, protokol verifikasi dan validasi statistik, jadwal kerja terstruktur, serta langkah mitigasi risiko pada bab ini, pelaksanaan eksperimen diharapkan dapat berjalan terukur dan menghasilkan pembuktian yang valid terhadap seluruh rumusan masalah penelitian.

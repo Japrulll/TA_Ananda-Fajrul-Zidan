@@ -1,0 +1,317 @@
+  % ============================================================================================
+  % BAB III ANALISIS MASALAH
+  % Pembagian subbab tidak rigid dan dapat bervariasi. Bab ini minimal berisi analisis kebutuhan
+  % fungsional dan nonfungsional, analisis berbagai alternatif solusi yang dapat ditawarkan, dan
+  % metode pemilihan solusi yang diusulkan.
+  % ============================================================================================
+  \cleardoublepage % memastikan bab baru dimulai di halaman ganjil (kanan)
+  \chapter{ANALISIS MASALAH}
+  \label{chap:analisis-masalah}
+
+  Bab ini menguraikan kondisi riset \textit{brain-tuning} yang ada saat ini beserta masalahnya, menurunkan kebutuhan fungsional dan nonfungsional dari masalah tersebut, lalu menganalisis beberapa alternatif solusi dan memilih solusi yang diusulkan. Seluruh analisis pada Bab \ref{chap:analisis-masalah} ini merujuk pada rumusan masalah (RM1--RM3) dan hipotesis (H1--H5) pada Bab \ref{chap:pendahuluan}, serta pada landasan teori dan penelitian terkait pada Bab \ref{chap:studi-literatur}.
+
+  % ============================================================================================
+  \section{Analisis Kondisi Saat Ini}
+  \label{chap:am_kondisi}
+
+  \subsection{Model Konseptual Alur \textit{Brain-Tuning} yang Ada}
+  \label{sub:am_konseptual}
+
+  Pada konteks tugas akhir ini, keberadaan sistem dipahami sebagai alur kerja \textit{brain-tuning} yang digunakan pada penelitian terdahulu \autocite{schwartz2019inducing, moussa2025improving, negi2025brain, xiao2026beyond}. Meskipun detail tiap penelitian berbeda, alur tersebut secara konseptual tersusun atas lima subsistem berikut.
+
+  \begin{enumerate}
+      \item \textbf{Subsistem data stimulus dan sinyal otak.} Subsistem ini menyediakan rekaman fMRI naturalistik serta transkrip atau stimulus yang berpenanda waktu, misalnya dataset \textcite{lebel2023natural}. Keluarannya adalah pasangan stimulus dan respon BOLD per \textit{repetition time} (TR).
+      \item \textbf{Subsistem pembentukan fitur.} Subsistem ini mengubah stimulus menjadi representasi internal model (\textit{hidden state} pada lapisan tertentu), menurunkan laju fitur tingkat kata ke laju TR, dan menambahkan penundaan hemodinamik (Persamaan \ref{eq:fir}).
+      \item \textbf{Subsistem penyelarasan (\textit{brain-tuning}).} Representasi model dipetakan ke ruang \textit{voxel} melalui proyeksi linear, lalu parameter model diperbarui menggunakan fungsi objektif otak, baik sendiri maupun digabung dengan \textit{loss} bahasa (Persamaan \ref{eq:hybrid}).
+      \item \textbf{Subsistem evaluasi.} Subsistem ini mengukur korelasi \textit{encoding} (\textit{brain score}) dan/atau kinerja pada tugas hilir seperti GLUE atau penalaran deduktif.
+      \item \textbf{Subsistem kontrol.} Subsistem ini menyediakan pembanding, misalnya \textit{fine-tuning} bahasa saja atau sinyal fMRI yang diacak (\textit{TR-shuffled}), untuk memastikan perubahan berasal dari informasi otak.
+  \end{enumerate}
+
+  Interaksi antarsubsistem bersifat searah dari data menuju evaluasi. Subsistem data menyuplai pasangan stimulus--respons ke subsistem pembentukan fitur, fitur tersebut dikonsumsi subsistem penyelarasan untuk memperbarui model, dan model hasil pembaruan dinilai oleh subsistem evaluasi dengan dibandingkan terhadap keluaran subsistem kontrol. Pada alur yang ada, subsistem evaluasi berhenti pada skor akhir, sehingga tidak ada subsistem yang khusus menganalisis perubahan di dalam model.
+
+  \begin{figure}[h]
+  \centering
+  \caption{Model konseptual alur \textit{brain-tuning} yang ada}
+  \label{fig:am_konseptual}
+  \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[
+      node distance=0.8cm and 0.9cm,
+      every node/.style={font=\scriptsize},
+      existing/.style={
+        rectangle, rounded corners=3pt, draw=black!70, thick, fill=gray!6,
+        text width=3.85cm, minimum height=2.35cm, align=left, inner sep=5pt
+      },
+      missing/.style={
+        rectangle, rounded corners=3pt, draw=black!35, dotted, thick, fill=gray!2,
+        text width=3.85cm, minimum height=2.35cm, align=center, inner sep=5pt, text=black!50
+      },
+      arr/.style={-{Stealth[length=2mm]}, thick, draw=black!75}
+    ]
+
+      % --- BARIS ATAS ---
+      \node[existing] (s1) {
+        \textbf{1. Subsistem Data Stimulus \& Otak}\\[2pt]
+        $\bullet$ Rekaman fMRI naturalistik\\
+        $\bullet$ Stimulus / transkrip berpenanda waktu\\
+        $\bullet$ Pasangan stimulus--BOLD per TR
+      };
+
+      \node[existing, right=of s1] (s2) {
+        \textbf{2. Subsistem Pembentukan Fitur}\\[2pt]
+        $\bullet$ Representasi internal model (\textit{hidden state})\\
+        $\bullet$ Penurunan laju kata ke TR\\
+        $\bullet$ Penundaan hemodinamik (Pers. \ref{eq:fir})
+      };
+
+      \node[existing, right=of s2] (s3) {
+        \textbf{3. Subsistem Penyelarasan}\\[2pt]
+        $\bullet$ Proyeksi linear ke ruang \textit{voxel}\\
+        $\bullet$ Pembaruan model (\textit{full FT} / LoRA)\\
+        $\bullet$ Objektif otak atau gabungan bahasa (Pers. \ref{eq:hybrid})
+      };
+
+      % --- BARIS BAWAH ---
+      \node[existing, below=1.05cm of s1] (s5) {
+        \textbf{5. Subsistem Kontrol}\\[2pt]
+        $\bullet$ Pembanding \textit{fine-tuning} bahasa saja atau fMRI acak (\textit{TR-shuffled})
+      };
+
+      \node[existing, below=1.05cm of s2] (s4) {
+        \textbf{4. Subsistem Evaluasi}\\[2pt]
+        $\bullet$ Korelasi \textit{encoding} (\textit{brain score})\\
+        $\bullet$ Kinerja tugas hilir (GLUE / penalaran)\\
+        $\bullet$ Berhenti pada skor akhir
+      };
+
+      \node[missing, below=1.05cm of s3] (s6) {
+        \textit{(Belum ada subsistem khusus analisis perubahan internal per lapisan, ROI, dan fitur tingkat rendah)}
+      };
+
+      % --- PANAH INTERAKSI ---
+      \draw[arr] (s1.east) -- node[above, font=\fontsize{6}{7}\selectfont]{Stimulus} (s2.west);
+      \draw[arr] (s2.east) -- node[above, font=\fontsize{6}{7}\selectfont]{Fitur} (s3.west);
+      \draw[arr] ([yshift=-3pt]s1.south east) -- ++(0,-0.32) -| node[pos=0.25, above, font=\fontsize{6}{7}\selectfont]{Respons BOLD} ([xshift=-12pt]s3.south);
+      \draw[arr] (s5.north east) -- ++(0,0.42) -| node[pos=0.25, below, font=\fontsize{6}{7}\selectfont]{Pembanding} ([xshift=-26pt]s3.south);
+      \draw[arr] ([xshift=-8pt]s3.south) -- ++(0,-0.48) -| node[pos=0.25, below, font=\fontsize{6}{7}\selectfont]{Model terlatih} (s4.north);
+
+    \end{tikzpicture}
+  }
+\end{figure}
+
+  \subsection{Masalah pada Kondisi Saat Ini}
+  \label{sub:am_masalah_kondisi}
+
+  Tinjauan pada Bab \ref{chap:studi-literatur} menunjukkan empat masalah pada alur yang ada.
+
+  \begin{enumerate}
+      \item \textbf{Keragaman model dan celah pada LLM teks \textit{decoder} berukuran menengah.} Penelitian yang ada menggunakan model ucapan \autocite{moussa2025improving, moussa2026generalizability}, model teks berparameter kecil \autocite{schwartz2019inducing, negi2025brain}, atau model teks besar (1,5--72 miliar parameter) untuk penalaran deduktif \autocite{xiao2026beyond}. LLM teks \textit{decoder} berukuran 1--8 miliar parameter yang realistis dijalankan pada GPU 16 GB (Kaggle: P100 atau T4) belum menjadi fokus evaluasi pemahaman semantik.
+      \item \textbf{Evaluasi berhenti pada skor akhir.} Hasil umumnya dilaporkan sebagai kinerja tugas hilir atau korelasi \textit{encoding}. Penelitian pada model teks belum menganalisis secara kuantitatif bagaimana representasi per lapisan dan per area otak berubah setelah \textit{brain-tuning} (Subbab \ref{sub:plt_hierarki}).
+      \item \textbf{Potensi bias dari fitur tingkat rendah.} Kenaikan keselarasan dapat berasal dari fitur sederhana seperti panjang dan frekuensi kata, bukan dari makna (Subbab \ref{sub:sl_lapis}). Tanpa pemisahan kontribusi, kenaikan skor mudah ditafsirkan berlebihan sebagai peningkatan pemahaman semantik.
+      \item \textbf{Kenaikan skor belum tentu sejalan dengan fungsionalitas.} Riset dari \textcite{xiao2026beyond} mencatat bahwa kenaikan skor kecerdasan model tidak selalu sejalan dengan manfaat fungsionalnya, sementara pengaruh bobot \textit{loss} sinyal otak terhadap kemampuan umum belum dipetakan secara sistematis pada LLM teks berukuran menengah. Selain itu, hasil pada tugas hilir yang bervalidasi kecil perlu ditafsirkan hati-hati (Subbab \ref{sub:sl_evaluasi}).
+  \end{enumerate}
+
+  Keempat masalah tersebut bermuara pada satu celah yang telah dirumuskan pada Bab \ref{chap:pendahuluan}, yaitu belum adanya analisis internal model yang kuantitatif dan terkontrol pada LLM teks \textit{decoder} setelah \textit{brain-tuning} dengan fMRI naturalistik.
+
+  % ============================================================================================
+  \section{Analisis Kebutuhan}
+  \label{chap:am_kebutuhan}
+
+  \subsection{Identifikasi Masalah Pengguna}
+  \label{sub:am_pengguna}
+
+  Pengguna dari hasil tugas akhir ini adalah (1) peneliti \textit{neuro-NLP} yang ingin memahami apa yang sebenarnya berubah pada LLM setelah dilatih dengan sinyal otak, dan (2) pengembang atau peneliti LLM yang ingin menilai apakah sinyal otak layak dipakai untuk memperbaiki pemahaman semantik tanpa merusak kemampuan umum model. Kebutuhan kedua kelompok tersebut dipetakan dari masalah pada Subbab \ref{sub:am_masalah_kondisi} dan rumusan masalah sebagai berikut.
+
+  \begin{enumerate}
+      \item Pengguna membutuhkan kerangka \textit{brain-tuning} yang \textit{dapat dijalankan} pada LLM teks \textit{decoder} berukuran 1--8 miliar parameter dengan sumber daya terbatas (RM1).
+      \item Pengguna membutuhkan bukti terkontrol bahwa peningkatan pemahaman semantik berasal dari informasi otak, bukan dari \textit{fine-tuning} bahasa semata (RM2).
+      \item Pengguna membutuhkan gambaran keseimbangan antara keselarasan otak, skor semantik, dan kemampuan umum sebagai fungsi bobot \textit{loss} sinyal otak, agar dapat memilih konfigurasi yang aman (RM2).
+      \item Pengguna membutuhkan penjelasan lapisan dan area otak mana yang berubah, serta seberapa besar kenaikan keselarasan yang hanya berasal dari fitur tingkat rendah (RM3).
+  \end{enumerate}
+
+  \subsection{Kebutuhan Fungsional}
+  \label{sub:am_kf}
+
+  Kebutuhan fungsional merupakan kemampuan yang harus dimiliki oleh kerangka eksperimen yang dibangun. Tabel \ref{tab:am_kf} merangkum kebutuhan tersebut beserta pemetaannya ke rumusan masalah.
+
+  \input tables/kf.tex
+
+  \subsection{Kebutuhan Nonfungsional}
+  \label{sub:am_knf}
+
+  Kebutuhan nonfungsional menentukan kualitas pelaksanaan dan validitas kesimpulan. Kebutuhan tersebut disajikan pada Tabel \ref{tab:am_knf}.
+
+  \begin{table}[h]
+    \centering
+    \caption{Kebutuhan nonfungsional kerangka eksperimen \textit{brain-tuning}}
+    \label{tab:am_knf}
+    \small
+    \begin{tabularx}{\textwidth}{p{1.5cm} p{3.0cm} p{7.0cm}}
+      \hline
+      \textbf{Kode} & \textbf{Aspek} & \textbf{Kebutuhan} \\
+      \hline
+      KNF-01 & Efisiensi memori & Seluruh pelatihan dan evaluasi dapat berjalan pada GPU kelas 16--24 GB. \\
+      KNF-02 & Reprodusibilitas & \textit{Seed}, konfigurasi, dan versi pustaka dicatat sehingga eksperimen dapat diulang. \\
+      KNF-03 & Keadilan perbandingan & Model \textit{brain-tuning} dan kontrol memakai data teks, \textit{hyperparameter}, dan anggaran komputasi yang setara sehingga selisih hanya berasal dari sinyal otak. \\
+      KNF-04 & Integritas evaluasi & Bobot \textit{encoding model} hanya dihitung pada cerita latih dan diuji pada cerita yang tidak terlihat. Hasil hilir dilaporkan per tugas, bukan hanya rata-rata, dan tugas dengan set validasi sangat kecil ditandai. \\
+      KNF-05 & Kekuatan statistik & Setiap kondisi utama dijalankan pada beberapa \textit{seed} dan dibandingkan dengan uji berpasangan \autocite{xiao2026beyond}. \\
+      KNF-06 & Modularitas & Model, objektif otak, dan lapisan target dapat diganti melalui konfigurasi. \\
+      KNF-07 & Keterlacakan & Seluruh \textit{run} mencatat konfigurasi dan metrik sehingga setiap angka pada laporan dapat ditelusuri. \\
+      KNF-08 & Kelayakan waktu & Komponen opsional (KF-12, model tambahan, dan \textit{Narratives}) dikerjakan hanya setelah komponen inti selesai. \\
+      \hline
+    \end{tabularx}
+  \end{table}
+  % TODO: perkirakan jumlah total run (kondisi x nilai lambda x seed x model) dan sesuaikan KNF-05 dan KNF-08 dengan anggaran GPU yang tersedia
+
+  % ============================================================================================
+  \section{Analisis Pemilihan Solusi}
+  \label{chap:am_solusi}
+
+  \subsection{Alternatif Solusi}
+  \label{sub:am_alternatif}
+
+  Alternatif solusi dianalisis pada dua tingkat. Tingkat pertama adalah pendekatan keseluruhan, dan tingkat kedua adalah keputusan desain komponen pada pendekatan yang terpilih.
+
+  \subsubsection{Alternatif Pendekatan Keseluruhan}
+
+  \begin{enumerate}
+      \item \textbf{Alternatif A: Analisis \textit{encoding} tanpa pembaruan model.} Representasi LLM yang tidak diubah dibandingkan dengan fMRI melalui \textit{brain score}, RSA, atau CKA \autocite{schrimpf2021neural, mischler2024contextual, yu2024predicting}. Pendekatan ini murah, tetapi hanya mengukur kesesuaian dan tidak menjawab apakah sinyal otak dapat memperbaiki model.
+      \item \textbf{Alternatif B: Replikasi \textit{brain-tuning} pada model teks kecil.} \textit{Fine-tuning} penuh pada model berparameter kecil dengan objektif otak \autocite{schwartz2019inducing, negi2025brain}. Pendekatan ini mudah dijalankan, tetapi hasilnya belum tentu berlaku pada LLM \textit{decoder} modern dan tidak mengisi celah analisis internal.
+      \item \textbf{Alternatif C: \textit{Brain-tuning} pada model ucapan.} Pendekatan \textcite{moussa2025improving, moussa2026generalizability}. Pendekatan ini sudah memiliki analisis per wilayah dan per lapisan, tetapi berada di luar ruang lingkup penelitian ini karena membutuhkan masukan akustik, sedangkan penelitian ini terbatas pada transkrip teks (Batasan Masalah nomor 1 dan 5).
+      \item \textbf{Alternatif D: \textit{Brain-tuning} berbasis PEFT pada LLM teks \textit{decoder} 1--8 miliar parameter dengan analisis internal terkontrol.} Model diperbarui dengan LoRA atau QLoRA menggunakan \textit{loss} gabungan bahasa dan otak, dibandingkan dengan kontrol bahasa saja dan fMRI diacak, lalu dianalisis per lapisan, per area otak, dan per fitur tingkat rendah.
+  \end{enumerate}
+
+  \subsubsection{Alternatif Strategi Pembaruan Parameter}
+
+  \begin{enumerate}
+      \item \textbf{\textit{Full fine-tuning}.} Seluruh parameter diperbarui sebagaimana pada \textcite{negi2025brain}. Pendekatan ini fleksibel, tetapi membutuhkan memori besar (sebagai perkiraan kasar, beberapa kali lipat dari ukuran bobot model karena adanya gradien dan keadaan \textit{optimizer}) dan berisiko \textit{catastrophic forgetting}.
+      \item \textbf{LoRA.} Bobot dasar dibekukan dan hanya pembaruan berperingkat rendah yang dilatih \autocite{hu2022lora}, seperti yang dipakai \textcite{xiao2026beyond} pada modul atensi. Memori jauh lebih hemat, tetapi bobot dasar tetap disimpan dalam presisi 16-bit.
+      \item \textbf{QLoRA.} LoRA dengan bobot dasar terkuantisasi untuk menekan memori lebih jauh. % TODO: tambahkan sitasi QLoRA (Dettmers dkk., 2023) pada berkas .bib
+      Pendekatan ini memungkinkan model 8 miliar parameter berjalan pada GPU kecil, tetapi kuantisasi menambah derau pada representasi sehingga perlu diperhatikan pada analisis CKA.
+  \end{enumerate}
+
+  \subsubsection{Alternatif Fungsi Objektif Otak}
+
+  \begin{enumerate}
+      \item \textbf{\textit{Mean squared error} (MSE)} (Persamaan \ref{eq:mse}). Sederhana, tetapi sensitif terhadap skala respons \textit{voxel} dan tidak sejajar dengan metrik evaluasi berbasis korelasi.
+      \item \textbf{Kemiripan kosinus} (Persamaan \ref{eq:cosine}). Tidak bergantung pada skala, berbatas, dan dekat dengan korelasi Pearson pada \textit{brain score}. Digunakan sebagai objektif utama oleh \textcite{xiao2026beyond}.
+      \item \textbf{NT-Xent} (Persamaan \ref{eq:ntxent}). Kontrastif dan dilaporkan memberi hasil terbaik oleh \textcite{negi2025brain} pada model yang diuji, tetapi bergantung pada ukuran \textit{batch} (jumlah contoh negatif) dan parameter temperatur $\tau$.
+  \end{enumerate}
+
+  \subsubsection{Alternatif Lapisan Target}
+
+  \begin{enumerate}
+      \item \textbf{Seluruh lapisan} sebagai sumber \textit{loss} otak. Memberi sinyal pada semua kedalaman, tetapi mengabaikan bahwa tiap lapisan menangkap tingkat informasi berbeda dan dapat memperbesar risiko pengaruh pada kemampuan umum.
+      \item \textbf{Lapisan tengah saja.} Sejalan dengan \textcite{xiao2026beyond} yang menerapkan pembaruan pada modul atensi lapisan tengah.
+      \item \textbf{Lapisan akhir saja.} Dekat dengan keluaran bahasa sehingga lebih besar kemungkinan bersinggungan langsung dengan objektif prediksi kata.
+  \end{enumerate}
+
+  \subsection{Analisis Penentuan Solusi}
+  \label{sub:am_penentuan}
+
+  \subsubsection{Penyaringan Pendekatan Keseluruhan}
+
+  Pendekatan keseluruhan disaring terhadap empat syarat wajib yang diturunkan dari rumusan masalah dan batasan penelitian: (S1) model diperbarui dengan sinyal otak, (S2) model berupa LLM teks \textit{decoder}, (S3) tersedia kontrol untuk memisahkan kontribusi sinyal otak, dan (S4) tersedia analisis internal per lapisan. Hasilnya ditunjukkan pada Tabel \ref{tab:am_saring}.
+
+  \begin{table}[h]
+    \centering
+    \caption{Penyaringan alternatif pendekatan keseluruhan}
+    \label{tab:am_saring}
+    \small
+    \begin{tabularx}{\textwidth}{p{6cm} | X | X | X | X | X}
+      \hline
+      \textbf{Alternatif} & \textbf{S1} & \textbf{S2} & \textbf{S3} & \textbf{S4} & \textbf{Lolos} \\
+      \hline
+      A. \textit{Encoding} tanpa pembaruan model & Tidak & Ya & Tidak & Ya & Tidak \\
+      B. Replikasi pada model teks kecil & Ya & Tidak & Ya & Tidak & Tidak \\
+      C. Model ucapan & Ya & Tidak & Ya & Ya & Tidak \\
+      D. PEFT pada LLM teks \textit{decoder} & Ya & Ya & Ya & Ya & Ya \\
+      \hline
+    \end{tabularx}
+  \end{table}
+
+  Hanya Alternatif D yang memenuhi seluruh syarat sehingga dipilih sebagai pendekatan keseluruhan. Alternatif A tetap digunakan sebagai bagian dari D, yaitu sebagai model awal (\textit{baseline}) dan alat analisis \textit{brain score}.
+
+  \subsubsection{Pemilihan Strategi Pembaruan Parameter}
+
+  Strategi pembaruan dinilai dengan skala 1 (buruk) sampai 5 (baik) pada lima kriteria berbobot, dan skor akhir dihitung sebagai jumlah skor dikali bobot. Tabel \ref{tab:am_skor_pembaruan} merangkum penilaian tersebut.
+
+  \begin{table}[h]
+    \centering
+    \caption{Penilaian alternatif strategi pembaruan parameter}
+    \label{tab:am_skor_pembaruan}
+    \small
+    \begin{tabularx}{\textwidth}{p{6.7cm} | X | X | X | X}
+      \hline
+      \textbf{Kriteria} & \textbf{Bobot} & \textbf{\textit{Full FT}} & \textbf{LoRA} & \textbf{QLoRA} \\
+      \hline
+      Efisiensi memori (KNF-01) & 0,25 & 1 & 4 & 5 \\
+      Risiko \textit{catastrophic forgetting} & 0,25 & 2 & 4 & 4 \\
+      Kelayakan implementasi & 0,15 & 2 & 5 & 3 \\
+      Dukungan literatur pada LLM besar & 0,15 & 3 & 4 & 3 \\
+      Kemudahan analisis per lapisan dan \textit{head} (KF-12) & 0,20 & 2 & 5 & 4 \\
+      \hline
+      \textbf{Skor akhir} & 1,00 & 1,90 & \textbf{4,35} & 3,95 \\
+      \hline
+    \end{tabularx}
+  \end{table}
+  % TODO: skor dan bobot pada tabel ini adalah penilaian penulis; sesuaikan atau minta masukan pembimbing, dan perkuat dengan angka memori hasil uji pendahuluan
+
+  LoRA memperoleh skor tertinggi. Pembaruan terisolasi pada matriks berperingkat rendah memudahkan penonaktifan LoRA per lapisan atau \textit{head} sebagai analisis opsional, dan bobot dasar yang tetap beku membuat perbandingan dengan model awal (CKA, \textit{brain score}) lebih bersih. QLoRA dipertahankan sebagai pilihan untuk model 4--8B parameter yang tidak muat pada GPU dalam presisi 16-bit, selaras dengan ruang lingkup pada Bab \ref{chap:pendahuluan}. \textit{Full fine-tuning} tidak dipilih karena kebutuhan memorinya tak sesuai dengan KNF-01 pada model berukuran 4B parameter ke atas.
+
+  \subsubsection{Pemilihan Fungsi Objektif Otak}
+
+  Penilaian fungsi objektif ditunjukkan pada Tabel \ref{tab:am_skor_objektif}, dengan kriteria yang menitikberatkan kecocokan pada batasan memori dan metrik evaluasi.
+
+  \begin{table}[h]
+    \centering
+    \caption{Penilaian alternatif fungsi objektif otak}
+    \label{tab:am_skor_objektif}
+    \small
+    \begin{tabularx}{\textwidth}{p{6.2cm} | X | X | X | X}
+      \hline
+      \textbf{Kriteria} & \textbf{Bobot} & \textbf{MSE} & \textbf{Kosinus} & \textbf{NT-Xent} \\
+      \hline
+      Stabil pada \textit{batch} kecil & 0,25 & 4 & 4 & 3 \\
+      Kesesuaian dengan metrik korelasi (\textit{brain score}) & 0,30 & 2 & 4 & 4 \\
+      Dukungan literatur & 0,15 & 3 & 4 & 4 \\
+      Kesederhanaan \textit{hyperparameter} & 0,15 & 5 & 5 & 2 \\
+      Kemudahan digabung dengan \textit{loss} bahasa (skala) & 0,15 & 2 & 4 & 4 \\
+      \hline
+      \textbf{Skor akhir} & 1,00 & 3,10 & \textbf{4,15} & \textbf{3,45} \\
+      \hline
+    \end{tabularx}
+  \end{table}
+  % TODO: skor dan bobot adalah penilaian penulis; verifikasi klaim sensitivitas MSE dan kebutuhan batch NT-Xent dengan hasil uji pendahuluan
+
+  NT-Xent dan kemiripan kosinus dipilih sebagai objektif utama karena keduanya bersifat invarian terhadap skala respons, sehingga bobot $\lambda$ pada Persamaan \ref{eq:hybrid} lebih mudah dibandingkan antarmodel dan antarvariasi bobot. Kemiripan kosinus bernilai berbatas serta paling mendekati korelasi Pearson pada perhitungan brain score, sementara NT-Xent memberikan sinyal kontrastif dari sampel negatif agar representasi lebih diskriminatif. Di sisi lain, MSE ditempatkan sebagai objektif sekunder karena nilainya tidak berbatas dan bergantung pada skala respons. Apabila waktu memungkinkan, MSE dapat dievaluasi sebagai objektif sekunder ablasi tambahan.
+
+  \subsubsection{Penentuan Lapisan Target}
+
+  Lapisan target ditentukan secara bertahap dan bukan dengan skor, karena nilai terbaiknya bergantung pada data. Lapisan $\ell^*$ dipilih dari kandidat lapisan tengah berdasarkan \textit{brain score} tertinggi pada model awal dalam uji pendahuluan, sejalan dengan temuan hierarki lapisan oleh \textcite{mischler2024contextual} dan pemilihan lapisan tengah oleh \textcite{xiao2026beyond}. \textit{Loss} otak dihitung dari \textit{hidden state} lapisan $\ell^*$ sehingga hanya lapisan $\le \ell^*$ yang menerima gradien otak. Karena itu, LoRA dipasang pada matriks proyeksi atensi ($W^Q$, $W^K$, $W^V$, $W^O$) dari lapisan awal hingga lapisan $\ell^*$, sedangkan \textit{loss} bahasa menjaga kemampuan bahasa model selama pembaruan. Lapisan di atas $\ell^*$ tidak diperbarui langsung, tetapi representasinya tetap dapat berubah secara tak langsung, diamati melalui CKA (H3). Pemilihan $\ell^*$ di model awal mengasumsikan bahwa lapisan yang paling selaras sebelum \textit{tuning}  sesuai untuk \textit{tuning}. % TODO: konfirmasi desain ini (LoRA semua lapisan, loss otak dari satu lapisan) dengan pembimbing, dan tentukan nilai rank r dan jumlah kandidat lapisan
+
+  \subsubsection{Ringkasan Solusi yang Dipilih}
+
+  Solusi yang dipilih secara keseluruhan adalah \textit{brain-tuning} berbasis PEFT pada LLM teks \textit{decoder} berukuran 1--8 miliar parameter dengan rincian pada Tabel \ref{tab:am_ringkas}.
+
+  \begin{table}[h]
+    \centering
+    \caption{Ringkasan keputusan solusi}
+    \label{tab:am_ringkas}
+    \small
+    \begin{tabularx}{\textwidth}{p{2.9cm} | X}
+      \hline
+      \textbf{Aspek} & \textbf{Keputusan} \\
+      \hline
+      Pendekatan \newline keseluruhan & \textit{Brain-tuning} PEFT pada LLM teks \textit{decoder} dengan analisis internal terkontrol (Alternatif D) \\
+      Strategi \newline pembaruan & LoRA pada model 1--4 miliar parameter, QLoRA (opsional) pada model 4--8 miliar parameter agar muat pada VRAM 16 GB (Kaggle) \\
+      Objektif otak & Kemiripan kosinus dan NT-Xent (MSE sebagai ablasi sekunder), digabung dengan \textit{loss} bahasa melalui bobot $\beta$ yang divariasikan \\
+      Lapisan target & LoRA pada atensi di lapisan ($\le \ell^*$), \textit{loss} otak dari satu lapisan tengah hasil uji pendahuluan \\
+      Kontrol & \textit{Fine-tuning} bahasa saja dan fMRI diacak (\textit{TR-shuffled}) dengan komputasi setara \\
+      Evaluasi hilir & STS-B, WiC, RTE atau MNLI, HellaSwag; MMLU dan \textit{perplexity} untuk kemampuan umum \\
+      Analisis internal & \textit{Brain score} per lapisan dan ROI, skor hierarki, CKA, dan dekomposisi variansi fitur tingkat rendah \\
+      Pengujian statistik & Beberapa \textit{seed} dan uji t berpasangan \\
+      \hline
+    \end{tabularx}
+  \end{table}
+
+  Rancangan terperinci dari solusi tersebut, yaitu objektif gabungan dan desain kontrol eksperimen, dibahas pada Bab IV.

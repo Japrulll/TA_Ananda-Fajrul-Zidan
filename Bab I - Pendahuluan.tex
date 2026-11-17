@@ -3,127 +3,171 @@
 \label{chap:pendahuluan}
 % --- Latar Belakang ---
 \section{Latar Belakang}
-Subbab ini menjelaskan dasar pemikiran, motivasi, kebutuhan, alasan, atau urgensi pemilihan masalah tesis. Subbab ini berisi penjelasan ringkas tentang kondisi atau situasi yang ada saat ini terkait dengan topik yang dibahas. Tujuan utamanya adalah untuk memberikan informasi secukupnya kepada pembaca agar memahami topik yang akan dibahas. Dalam subbab ini, jelaskan hal-hal berikut ini:
-\begin{enumerate}
-\item	Kondisi atau situasi topik yang dibahas beserta permasalahannya, misalnya tentang pengelolaan informasi di fasilitas kesehatan daerah pedesaan saat ini dan masalah yang dihadapi, berdasarkan hasil survei atau wawancara dengan pihak terkait.
-\item	Urgensi atau pentingnya penyelesaian masalah tersebut, misalnya dampak negatif yang ditimbulkan jika masalah tersebut tidak diselesaikan.
-\item	Berbagai solusi yang telah diterapkan maupun solusi yang memungkinkan untuk diterapkan untuk menyelesaikan masalah tersebut, berdasarkan hasil studi literatur, wawancara dengan pihak terkait, atau kunjungan lapangan.
-\item   Kelemahan atau kekurangan dari solusi yang telah diterapkan atau yang memungkinkan untuk diterapkan tersebut, yang menjadi dasar pemikiran dalam merumuskan masalah tesis.
-\end{enumerate}
-Penulisan latar belakang masalah yang baik akan mengantarkan pembaca kepada pemahaman yang jelas tentang topik yang akan dibahas, 
-sehingga pembaca dapat mengikuti pembahasan pada bab atau subbab berikutnya dengan baik. Oleh karena itu, 
-penulis diharapkan melakukan investigasi yang mendalam untuk mengumpulkan fakta-fakta yang relevan dengan topik yang dibahas, 
-baik melalui studi literatur, wawancara dengan pihak terkait, maupun kunjungan lapangan. Hasil studi ini dijelaskan secara \emph{ringkas} di dalam subbab ini.
-Penjelasan hasil studi literatur yang komprehensif dapat dijabarkan di Bab II secara sistematis.
+\label{chap:pd_latbel}
+Model bahasa besar atau \textit{Large Language Model} (LLM) yang awalnya diaplikasikan sebagai alat untuk memahami mekanisme otak manusia, kini mulai diaplikasikan ke arah sebaliknya, yaitu pemanfaatan sinyal otak manusia untuk memperbaiki model bahasa besar. Sinyal tersebut merupakan salah satu bagian penting dari objek penelitian \textit{neuroscience}, yaitu disiplin ilmu dengan fokus pada kajian sistem saraf otak, termasuk yang mengkaji mekanisme otak manusia dalam memproses bahasa. Pemahaman akan mekanisme tersebut berpotensi besar untuk diterapkan pada pengembangan model bahasa besar dengan representasi internal yang lebih selaras dengan cara kerja otak dalam memproses bahasa. Penerapan ini diharapkan dapat meningkatkan kapabilitas model dalam memahami konteks bahasa secara semantik.
 
-Dalam menulis latar belakang, hindari penulisan yang bersifat terlalu umum atau terlalu luas cakupannya sehingga sulit untuk dihubungkan dengan topik yang dibahas dalam tesis,
-seperti:
-\begin{enumerate}
-    \item "Pentingnya teknologi informasi dalam kehidupan manusia."
-    \item "Perkembangan pesat teknologi \emph{artificial intelligence} di era digital."
-    \item "Tantangan dalam pengelolaan data besar (\emph{big data}) di berbagai sektor industri."
-    \item "Peran teknologi informasi dalam meningkatkan kualitas layanan kesehatan."
-\end{enumerate}
-Penulisan yang terlalu umum atau luas cakupannya akan menyulitkan penulis dalam merumuskan masalah, tujuan, metodologi, dan evaluasi tesis.
+Pengaplikasian LLM ke arah tersebut memanfaatkan data sinyal otak manusia seperti \textit{functional magnetic resonance imaging} atau fMRI. Secara khusus, \textcite{lebel2023natural} merilis data fMRI berskala besar berisi rekaman lengkap aktivitas otak saat sejumlah 8 partisipan mendengarkan siniar (\textit{podcast}). Ketersediaan data ini mendukung penelitian mendalam sebagaimana telah dijabarkan sebelumnya, terlebih data turunannya (untuk keperluan komputasi) sudah menerapkan prosedur \textit{data preprocessing}. Selain itu, data \textit{electrocorticography} (ECoG) dan \textit{magnetoencephalography} (MEG) juga digunakan pada penelitian serupa yang berfokus pada pemanfaatan sinyal otak manusia untuk meningkatkan pemahaman semantik model bahasa besar. 
 
-Jika ada referensi yang digunakan dalam penulisan latar belakang, cantumkan referensi tersebut dengan benar menggunakan \texttt{biblatex} sesuai dengan contoh penulisan kutipan dan daftar pustaka yang telah disediakan dalam template ini.
-Sebagai contoh, pada paragraf berikut ini terdapat kutipan dari dua referensi yang berbeda \autocite{laudon2020, pressman2019}. 
-Ada dua format penulisan sitasi yang dapat digunakan, yaitu format naratif dan format parentetik.
-Contoh penulisan kutipan dengan format naratif adalah sebagai berikut:
-\begin{displayquote}
-Menurut \textcite{laudon2020}, sistem informasi adalah kombinasi dari teknologi informasi dan aktivitas orang yang menggunakan teknologi tersebut untuk mendukung operasi dan manajemen organisasi.
-\end{displayquote}
-Contoh penulisan kutipan dengan format parentetik adalah sebagai berikut:
-\begin{displayquote}
-    Sistem informasi merupakan kombinasi dari teknologi informasi dan aktivitas orang yang menggunakan teknologi tersebut untuk mendukung operasi dan manajemen organisasi \autocite{laudon2020}.
-\end{displayquote}
+Ketersediaan data sinyal otak mendorong eksplorasi \textit{brain-tuning} yang diaplikasikan pada tiga segmentasi. Pertama, pembuktian akan adanya keselarasan representasi internal antara jaringan otak manusia dengan LLM \autocite{goldstein2022shared, schrimpf2021neural, mischler2024contextual, yu2024predicting}. Kedua, perbaikan model berbasis bukti peningkatan pemahaman semantik atau kecerdasan LLM \autocite{schwartz2019inducing, moussa2026generalizability, moussa2025improving, negi2025brain, xiao2026beyond}. Ketiga, implementasi nyata sinyal otak untuk merekonstruksi teks \autocite{Tang2023858}.
+
+% Beda proses implementasi -> Research gap -> Usulan gua
+
+Fokus utama riset ini terletak pada pengaplikasian \textit{brain-tuning} pada segmen kedua, yaitu perbaikan LLM yang terukur berdasarkan peningkatan pemahaman semantik. Serangkaian tinjauan literatur pada segmen tersebut menggugah temuan akan adanya celah riset yang potensial. Dari segi pemanfaatan model, jenis model yang digunakan bervariasi pada tiga kelompok: model ucapan atau \textit{speech-LLM} \autocite{moussa2026generalizability, moussa2025improving} model teks dengan parameter kecil (<1 miliar) \autocite{schwartz2019inducing, negi2025brain}, serta model teks dengan parameter besar (1.5--72 miliar) untuk penalaran deduktif \autocite{xiao2026beyond}. Dari segi evaluasi, umumnya evaluasi berhenti pada skor akhir seperti kinerja tugas hilir atau korelasi \textit{encoding}. Dari segi galat riset, efek samping paparan fitur rendah seperti panjang dan frekuensi kata berpotensi menimbulkan bias dalam meningkatkan pemahaman semantik. Dari segi fungsionalitas model, \textcite{xiao2026beyond} mencatat bahwa kenaikan skor kecerdasan model tidak selalu sejalan dengan manfaat fungsionalitasnya. 
+
+Berdasarkan tinjauan tersebut, pengaplikasian \textit{brain-tuning} pada riset ini dapat dikembangkan melalui beberapa pendekatan. (1) Memanfaatkan LLM teks berarsitektur \textit{decoder} dengan parameter realistis (1--8 miliar) yang diseimbangkan melalui mekanisme PEFT (\textit{Parameter-Efficient Fine-Tuning}) seperti LoRA (\textit{Low-Rank Adaptation}) menggunakan data fMRI naturalistik milik \textcite{lebel2023natural}. (2) Melakukan evaluasi melalui tugas pemahaman semantik hilir dengan variasi model pembanding berupa model yang di-\textit{fine-tuning} bahasa saja dan model yang dilakukan pengacakan (\textit{randomized}) sinyal otak. (3) Mengalisis secara kuantitatif representasi internal model (per lapisan) melalui tiga hal: perubahan per lapisan model dan per area otak (skor hierarki dan CKA), kontribusi fitur teks tingkat rendah (dekomposisi variansi), dan keseimbangan antara keselarasan otak, skor semantik, serta fungsionalitas model dengan memvariasikan bobot \textit{loss} sinyal otak. (4) Analisis pada tiap tingkat \textit{attention head} (misalnya penonaktifan LoRA per lapisan atau \textit{head}) yang dilakukan secara opsional apabila waktu riset memungkinkan. Pengembangan ini memberi manfaat ilmiah berupa pemetaan representasi internal LLM, serta validasi peran sinyal otak dalam memberi informasi yang tidak dapat diperoleh hanya dari teks saja. % ini nanti dikaji lagi brads..
+
+Dari penjabaran tersebut, celah yang dituju riset ini adalah analisis internal model. Sejauh literatur yang ditinjau, belum ditemukan riset yang menganalisis secara kuantitatif bagaimana representasi per lapisan LLM teks berubah setelah \textit{brain-tuning} dengan fMRI naturalistik. Penelitian ini mengisi celah tersebut pada LLM teks berarsitektur \textit{decoder}. Selain mengukur peningkatan pemahaman semantik, riset ini menjelaskan jenis dan alasan dari setiap perubahan yang terjadi. Rumusan masalah yang diturunkan dari celah riset tersebut dijabarkan secara merinci pada Subbab \ref{chap:pd_rm}.
+
 % --- Rumusan Masalah ---
 \section{Rumusan Masalah}
-Subbab ini berisi masalah utama yang dibahas dalam tesis. Perumusan masalah yang baik memiliki struktur sebagai berikut:
-\begin{enumerate}
-\item	Pokok persoalan dari kondisi atau situasi yang ada saat ini. Dengan kata lain, jelaskan kelemahan atau kekurangan dari kondisi, situasi, atau solusi yang dijelaskan pada latar belakang. Ini merupakan pokok rumusan masalah.
-\item	Elaborasi lebih lanjut urgensi penyelesaian masalah tersebut (mengapa penting untuk diselesaikan dan akibat yang dapat terjadi jika tidak diselesaikan).
-\item	Usulan singkat terkait dengan solusi yang ditawarkan untuk menyelesaikan persoalan.
-Penting untuk diperhatikan bahwa persoalan yang dideskripsikan pada subbab ini akan dipertanggungjawabkan di bab Evaluasi (apakah terselesaikan atau tidak).
-\end{enumerate}
-Hindari penulisan masalah yang terlalu umum atau terlalu luas cakupannya sehingga sulit untuk diselesaikan dalam jangka waktu pelaksanaan tesis, 
-seperti:
-\begin{enumerate}
-    \item "Bagaimana cara meningkatkan kualitas layanan kesehatan di Indonesia?"
-    \item "Bagaimana cara mengoptimalkan penggunaan energi di perkotaan?"
-    \item "Bagaimana cara mengurangi kemacetan lalu lintas di kota besar?"
-    \item "Bagaimana cara membangun sistem irigasi sawah menggunakan \emph{AI}?"
-\end{enumerate}
-Rumusan masalah yang baik dan spesifik akan memudahkan penulis dalam menentukan tujuan, metodologi, dan evaluasi tesis.
+\label{chap:pd_rm}
+Dalam pelaksanaannya untuk memperoleh hasil baik dalam bentuk pemerolehan model dengan peningkatan pemahaman semantik ataupun manfaat ilmiah dari informasi luaran riset, penting untuk memastikan beberapa hal fundamental. Hal-hal tersebut mencakup mekanisme perancangan riset \textit{brain-tuning} yang memanfaatkan beberapa sumber daya komputasional (model, data, dan pengaplikasian PEFT), validasi peningkatan pemahaman semantik model pada tugas hilir serta kontrol keseimbangan fungsionalitas model, dan pemahaman akan perubahan representasi internal yang berubah dengan mempertimbangkan efek samping fitur teks tingkat rendah. Cakupan tersebut dirumuskan secara komprehensif pada rumusan masalah berikut:
 
-Selain itu, hindari menuliskan pertanyaan yang merupakan sebuah keniscayaan yang harus dijawab atau dikerjakan 
-dalam pelaksanaan tesis, seperti:
-\begin{enumerate}
-    \item "Bagaimana cara melakukan analisis kebutuhan sistem informasi rumah sakit?"
-    \item "Bagaimana cara merancang basis data untuk aplikasi X?"
-    \item "Bagaimana cara mengimplementasikan \textit{large language model} untuk deteksi penyakit Y?"
-    \item "Bagaimana cara menguji sistem penyiraman tanaman berbasis IoT yang akan dibuat?"
+\begin{enumerate}[label=RM\arabic*.]
+    \item Bagaimana merancang dan mengimplementasikan \textit{brain-tuning} berbasis pengaplikasian PEFT (LoRA) pada LLM teks berarsitektur \textit{decoder} (1--8 miliar parameter) dengan objektif \textit{brain-alignment} dari data fMRI naturalistik?
+    \item Apakah \textit{brain-tuning} meningkatkan pemahaman semantik hilir dibandingkan \textit{fine-tuning} bahasa saja dan pengacakan sinyal otak, dan bagaimana keseimbangannya dengan keselarasan otak serta fungsionalitas model ketika bobot \textit{loss} dari sinyal otak manusia divariasikan nilainya?
+    \item Bagaimana representasi internal LLM berubah per lapisan model dan per area otak akibat \textit{brain-tuning}, dan seberapa besar kenaikan keselarasan yang berasal dari fitur teks tingkat rendah dibandingkan informasi semantik?
 \end{enumerate}
-Kegiatan analisis, perancangan, implementasi, dan pengujian merupakan tahapan yang harus dilakukan dalam pelaksanaan tesis,
-sehingga pertanyaan-pertanyaan tersebut tidak perlu dimasukkan ke dalam rumusan masalah.
+
+Setiap rumusan masalah akan dipetakan pada beberapa hipotesis di Subbab \ref{chap:pd_hipo}. Secara khusus, RM1 tidak akan dipetakan pada hipotesis karena bersifat perancangan.
 
 % --- Tujuan ---
 \section{Tujuan}
-Tuliskan \textbf{tujuan utama} dan/atau tujuan detail yang akan dicapai dalam pelaksanaan tesis. 
-Fokuskan isi subbab ini pada hasil akhir yang ingin diperoleh setelah tesis diselesaikan 
-terkait dengan penyelesaian persoalan pada rumusan masalah. 
-Penting untuk diperhatikan bahwa tujuan yang dideskripsikan pada subbab ini akan dipertanggungjawabkan 
-di akhir pelaksanaan tesis. Oleh karena itu, tuliskan juga \emph{kriteria keberhasilan} tesis ini.
+Berdasarkan ketiga rumusan masalah yang telah dijabarkan, riset ini mengharapkan ketercapaian luaran yang dapat diukur. Ketercapaian tersebut disusun menjadi beberapa tujuan tugas akhir yang dipetakan dari tiap poin rumusan masalah berikut:
+\begin{enumerate}
+    \item Mengimplementasikan \textit{brain-tuning} berbasis LoRA pada LLM teks \textit{decoder} (1--8 miliar parameter) dengan objektif \textit{brain-alignment} dari fMRI naturalistik, termasuk menentukan lapisan target, objektif, dan bobot \textit{loss} dasar.
+    \item Mengevaluasi pengaruh \textit{brain-tuning} terhadap pemahaman semantik hilir dibandingkan \textit{fine-tuning} bahasa saja dan pengacakan sinyal otak, serta membuat pemetaan keseimbangan (\textit{balance-mapping}) antara keselarasan otak, skor semantik, dan fungsionalitas model terhadap bobot \textit{loss}.
+    \item Menganalisis secara kuantitatif akan perubahan representasi internal per lapisan model dan per area otak, serta mengukur kontribusi fitur teks tingkat rendah terhadap peningkatan keselarasan.
+\end{enumerate}
 
 % --- Batasan Masalah ---
 \section{Ruang Lingkup, Asumsi, dan Batasan Masalah}
-Tuliskan ruang lingkup, asumsi, dan batasan-batasan yang diambil dalam pelaksanaan tesis. Batasan ini dapat dihindari (bersifat opsional, tidak perlu ada) jika topik atau judul tesis dibuat cukup spesifik.
+Keberjalanan tugas akhir ini akan tetap mempertahankan rasionalitas dan terlaksana secara realistis. Dalam upaya mempertahankan hal tersebut, berikut adalah rincian ruang lingkup, asumsi, serta batasan masalah dari seluruh pelaksanaan tugas akhir:
 
-\section{Hipotesis}
-Tuliskan hipotesis yang akan diuji dalam pelaksanaan tesis. 
-Hipotesis ini merupakan pernyataan yang dapat diuji kebenarannya melalui proses pelaksanaan tesis, 
-terutama pada tahap evaluasi. Hipotesis yang baik memiliki karakteristik sebagai berikut:
+\subsection*{Ruang Lingkup}
 \begin{enumerate}
-    \item Spesifik: Hipotesis harus jelas dan spesifik, sehingga dapat diuji dengan cara yang terukur.
-    \item Terukur: Hipotesis harus dapat diuji dengan data atau informasi yang dapat diukur, sehingga dapat dinilai kebenarannya.
-    \item Relevan: Hipotesis harus relevan dengan topik tesis dan dapat memberikan kontribusi yang signifikan terhadap penyelesaian masalah yang dibahas.
-    \item Dapat diuji: Hipotesis harus dapat diuji melalui proses pelaksanaan tesis, terutama pada tahap evaluasi, sehingga dapat dinilai kebenarannya.
+    \item Perancangan \textit{brain-tuning} berfokus pada LLM teks \textit{decoder} berukuran 1--8 miliar parameter yaitu: Llama-3-8B LLama3.1-8B, Qwen3-4B, dan/atau Mistral-7B (bersifat opsional) menggunakan LoRA pada rentang 1--4 miliar parameter dan QLoRA (bersifat opsional) pada rentang 4--8 miliar parameter.
+    \item Data fMRI naturalistik yang digunakan untuk \textit{brain-tuning} bersumber dari dataset publik \textcite{lebel2023natural}, dengan dataset Narratives milik \textcite{nastase2021narratives} (bersifat opsional) yang memvalidasi generalisasi lintas dataset.
+    \item Evaluasi tugas hilir (\textit{downstream task}) pada pemahaman semantik dengan \textit{benchmark}: STS-B (kemiripan makna kalimat), WiC/SuperGLUE (makna kata dalam konteks), RTE atau MNLI (inferensi bahasa alami), dan HellaSwag (kelanjutan narasi). Pada fungsionalitas model dengan \textit{benchmark}: MMLU (pengetahuan dan juga penalaran) dan Perplexity (kemampuan bahasa dasar). 
 \end{enumerate}
 
-Hipotesis diperoleh dari premis-premis yang ada pada latar belakang dan rumusan masalah. 
-Oleh karena itu, tuliskan dulu premis-premis yang menentukan hipotesis tersebut sebelum menuliskan hipotesisnya.
+\subsection*{Asumsi}
+\begin{enumerate}
+    \item Respon BOLD dapat dipetakan secara linear dari representasi internal model.
+    \item Tahap prapemrosesan pada dataset turunan yang tersedia valid dan konsisten.
+    \item Penundaan hemodinamik dimodelkan dengan penundaan tetap beberapa TR.
+    \item Penjajaran waktu untuk setiap kata pada transkrip dengan sinyal fMRI akurat.
+    \item \textit{Benchmark} yang dipilih mengukur pemahaman semantik dan \textit{probing} linear pada representasi beku mencerminkan informasi yang dapat dikodekan LLM.
+    \item Pengacakan TR (\textit{Repetition Time}) menghilangkan informasi spesifik otak tanpa mengubah statistik dasar sinyal otak manusia pada dataset original fMRI.
+    \item Transkrip berpenanda waktu cukup merepresentasikan stimulus untuk menjawab rumusan masalah, tanpa adanya tambahan dari informasi akustik dataset.
+    \item Luaran model terpilih cukup mewakili LLM pada rentang ukuran yang sama.
+\end{enumerate}
+
+\subsection*{Batasan Masalah}
+\begin{enumerate}
+    \item Jenis LLM terbatas pada teks \textit{decoder}. Riset tidak mencakup jenis LLM \textit{speech}, \textit{encoder}, atau multimodal, sehingga hasil tidak berlaku untuk semua LLM.
+    \item Data sinyal otak yang digunakan hanyalah fMRI, dan tidak menggunakan ECoG, MEG, EEG, atau data serupa lainnya. Data Narratives digunakan secara opsional (hanya jika waktu memungkinkan) pada evaluasi lintas dataset.
+    \item Bahasa yang digunakan baik pada data fMRI dan setiap \textit{benchmark} adalah bahasa Inggris (partisipan mendengar siniar \textit{Moth Radio Hours} pada perekaman fMRI), sehingga luaran yang dihasilkan tidak digeneralisasi pada bahasa lain.
+    \item Jumlah partisipan pada dataset fMRI terbatas hanya pada 8 orang partisipan, sehingga luaran yang dihasilkan tidak diklaim berlaku untuk populasi umum.
+    \item Masukan model hanya berupa transkrip teks, sehingga informasi akustik dan prosodi tidak disertakan dalam pemodelan. Selain itu, area auditori primer pada otak manusia juga tidak diharapkan sepenuhnya dijelaskan oleh model.
+    \item Analisis tingkat sirkuit (\textit{causal tracing}) tidak dilakukan karena ada di luar cakupan riset. Analisis per \textit{attention head} bersifat opsional jika memungkinkan.
+    \item Perbandingan dengan kontrol hanya menunjukkan selisih, tidak membuktikan adanya hubungan kausal sinyal otak manusia terhadap kemampuan bahasa.
+\end{enumerate}
+
+% --- Hipotesis ---
+\section{Hipotugas}
+\label{chap:pd_hipo}
+Hipotesis pada tugas akhir ini disusun berdasarkan premis-premis yang diperoleh dari latar belakang beserta rumusan masalah. Berikut tersaji premis tugas akhir ini:
+
+\subsection*{Premis}
+\begin{enumerate}[label=P\arabic*.]
+    \item Representasi internal LLM selaras sebagian dengan aktivitas otak manusia saat memproses bahasa natural \autocite{goldstein2022shared, schrimpf2021neural}.
+    \item Hierarki lapisan model sejajar dengan hierarki korteks: lapisan lebih dalam selaras dengan area otak yang jauh dari korteks auditori \autocite{mischler2024contextual}.
+    \item Pada penalaran deduktif, proses \textit{brain-tuning} dengan sinyal otak (fMRI) asli memberi hasil lebih baik daripada sinyal otak yang diacak \autocite{xiao2026beyond}.
+    \item Kenaikan keselarasan global (dalam skor kecerdasan) tidak selalu sejalan dengan fungsionalitas LLM. Selain itu, fungsionalitas LLM stabil pada bobot \textit{loss} sinyal otak yang relatif kecil \autocite{xiao2026beyond}. Secara logis, kemampuan tersebut berpotensi mengalami penurunan pada bobot \textit{loss} yang besar. Hal ini dapat disebabkan oleh adanya dominasi objektif otak pada objektif bahasa.
+    \item Pada LLM ucapan (\textit{speech-LLM}), proses \textit{brain-tuning} terbukti dapat mengurangi pengaruh fitur tingkat rendah terhadap keselarasan \autocite{moussa2025improving}.
+    \item Dampak \textit{brain-tuning} terhadap pemahaman semantik LLM teks dan perubahan representasi per lapisan perlu dianalisis secara kuantitatif \autocite{negi2025brain}.
+\end{enumerate}
+
+% \begin{enumerate}
+%     \item Representasi internal model bahasa dapat digunakan untuk memprediksi aktivitas otak manusia saat memproses bahasa \autocite{schrimpf2021neural}.
+%     \item \textit{Fine-tuning} model bahasa menggunakan sinyal otak (fMRI dan MEG) dapat dilakukan tanpa menimbulkan kerusakan pada kapabilitas model \autocite{schwartz2019inducing}.
+%     \item \textit{Brain-tuning} pada model ucapan terbukti meningkatkan pemahaman semantik model \autocite{moussa2025improving}.
+%     \item Dataset fMRI naturalistik berskala besar dengan rekaman puluhan jam per partisipan telah tersedia secara publik \autocite{lebel2023natural}.
+%     \item Penelitian sebelumnya belum menerapkan \textit{brain-tuning} pada LLM modern berskala besar dengan kontrol ketat yang memisahkan kontribusi sinyal otak dari efek \textit{fine-tuning} lainnya.
+% \end{enumerate}
+
+\subsection*{Hipotesis}
+Berdasarkan premis-premis tersebut, berikut tersaji hipotesis tugas akhir berupa pemetaan tiap premis dengan dugaan-dugaan awal proses riset yang terukur untuk pembuktian secara teoritis terhadap seluruh keberjalanan pengerjaan tugas akhir:
+\begin{enumerate}[label=H\arabic*.]
+    \item Skor pemahaman semantik hilir model \textit{brain-tuning} fMRI lebih tinggi dari model \textit{fine-tuning} bahasa saja dan model yang sinyal otaknya diacak (P1, P3).
+    \begin{itemize}
+        \item[$H_{0}$:] Skor pemahaman semantik hilir model dengan \textit{brain-tuning} tidak lebih tinggi daripada skor pemahaman semantik kedua model kontrol tersebut.
+        \item[$H_{1}$:] Skor pemahaman semantik hilir model dengan \textit{brain-tuning} jelas lebih tinggi daripada skor pemahaman semantik kedua model kontrol tersebut.
+    \end{itemize}
+    \item Terdapat rentang bobot \textit{loss} sinyal otak yang teramati dalam menaikkan keselarasan otak tanpa penurunan berarti pada fungsionalitas model, sedangkan pada bobot \textit{loss} yang besar (di luar rentang) fungsionalitasnya menurun (P4).
+    \begin{itemize}
+        \item[$H_{0}$:] Tidak ditemukan rentang bobot \textit{loss} sinyal otak yang dapat menaikkan keselarasan otak tanpa penurunan fungsionalitas yang berarti. Fungsionalitas menurun di semua bobot, atau tidak menurun pada bobot besar.
+        \item[$H_{1}$:] Ditemukan rentang bobot \textit{loss} sinyal otak yang dapat menaikkan keselarasan otak tanpa penurunan berarti pada fungsionalitas model, sedangkan pada bobot yang besar (di luar rentang) fungsionalitasnya menurun.
+    \end{itemize}
+    \item Perubahan representasi ($1-$CKA terhadap model awal) pada lapisan awal hingga tengah ($\le \ell^*$) lebih besar daripada pada lapisan di atas $\ell^*$, dan juga lebih besar daripada model yang diberi \textit{fine-tuning} pada bahasa saja (P2, P6).
+    \begin{itemize}
+        \item[$H_{0}$:] Perubahan pada lapisan awal hingga tengah tidak lebih besar daripada lapisan di atasnya atau juga tidak lebih besar daripada model bahasa saja.
+        \item[$H_{1}$:] Perubahan pada lapisan awal hingga tengah jelas lebih besar daripada lapisan di atasnya dan juga jelas lebih besar daripada model bahasa saja.
+    \end{itemize}
+    \item Kenaikan keselarasan pada ROI (\textit{Region of Interest}) kategorikal seperti area otak tingkat tinggi terbukti lebih besar daripada area auditori primer otak (P2).
+    \begin{itemize}
+        \item[$H_{0}$:] Kenaikan keselarasan pada ROI (\textit{Region of Interest}) seperti area otak tingkat tinggi terbukti sama/lebih kecil daripada di area auditori primer.
+        \item[$H_{1}$:] Kenaikan keselarasan pada ROI (\textit{Region of Interest}) seperti area otak tingkat tinggi jelas terbukti lebih besar daripada di area auditori primer.
+    \end{itemize}
+    \item Porsi keselarasan yang dijelaskan fitur teks tingkat rendah menurun setelah \textit{brain-tuning} pada fMRI asli dan tidak menurun pada fMRI yang diacak (P5).
+    \begin{itemize}
+        \item[$H_{0}$:] Porsi keselarasan dari fitur teks tingkat rendah tidak menurun setelah \textit{brain-tuning} fMRI asli, atau penurunannya sepadan dengan fMRI acak.
+        \item[$H_{1}$:] Porsi keselarasan dari fitur teks tingkat rendah ikut menurun setelah \textit{brain-tuning} fMRI asli, serta penurunannya lebih besar dari fMRI acak.
+    \end{itemize}
+\end{enumerate}
+
+Tiap hipotesis juga merupakan pemetaan dari setiap poin rumusan masalah di Subbab \ref{chap:pd_rm} yakni: (1) RM2 dipetakan pada H1 dan H2, (2) RM3 dipetakan pada H3, H4, dan H5, (3) RM1 tidak dipetakan pada H manapun karena bersifat perancangan.
+\vfill
 
 
+% \begin{enumerate}
+%     \item \textbf{H1:} Model LLM hasil \textit{brain-tuning} memiliki kinerja pemahaman semantik yang lebih tinggi secara signifikan secara statistik dibandingkan model kontrol yang di-\textit{fine-tune} pada data yang sama tanpa sinyal otak dengan komputasi setara.
+%     \begin{itemize}
+%         \item $H_0$: tidak terdapat perbedaan kinerja pemahaman semantik antara model \textit{brain-tuning} dan model kontrol.
+%         \item $H_1$: model \textit{brain-tuning} memiliki kinerja pemahaman semantik yang lebih tinggi daripada model kontrol.
+%     \end{itemize}
+%     \item \textbf{$H2:$} \textit{Brain-tuning} mengubah representasi model secara tidak merata antar lapisan, dengan perubahan terbesar terjadi pada lapisan tertentu yang selaras dengan hierarki pemrosesan bahasa di korteks.
+%     \item \textbf{H3:} \textit{Brain-tuning} tidak menurunkan kapabilitas umum model secara signifikan pada tugas hilir di luar tugas pemahaman semantik utama.
+% \end{enumerate}
 
-% --- Metodologi Pengerjaan TA ---
+% --- Metodologi ---
 \section{Metodologi}
-Tuliskan semua tahapan spesifik yang akan dilalui selama pelaksanaan tesis. 
-Ada beberapa pendekatan metodologi yang dapat digunakan dalam pelaksanaan tesis sesuai dengan topik yang dibahas, 
-misalnya Design Science Research Methodology (DSRM), Design Research Methodology (DRM), Cross-Industry Standard Process for Data Mining (CRISP-DM), dan sebagainya.
-
-Secara umum,  metodologi pengerjaan tesis meliputi tahapan, langkah-langkah, atau tata cara melakukan:
+Tugas akhir ini menggunakan pendekatan penelitian eksperimental dengan desain kontrol yang ketat. Tahapan yang dilalui adalah sebagai berikut:
 \begin{enumerate}
-\item	Investigasi pengumpulan fakta di latar belakang untuk merumuskan masalah.
-\item	Pencarian, pengelompokan, dan penapisan literatur atau sumber informasi untuk mengumpulkan informasi yang relevan tentang topik yang diangkat, termasuk teori (konsep atau teori apa saja yang perlu dicari), hal-hal yang telah dicapai oleh orang lain (cara mencari dan kata kuncinya), dan berbagai informasi pendukung, untuk mencari solusi terhadap masalah yang dibahas. Gunakan metodologi yang tepat dalam menggali informasi dan dokumentasikan prosesnya (termasuk rekaman wawancara atau survei) di dalam Lampiran, termasuk tautan ke video atau foto. Hasil penggalian informasi ini akan dijelaskan secara komprehensif di Bab II Studi Literatur.
-\item   Analisis kebutuhan berdasarkan hasil investigasi dan studi literatur. Jelaskan metode yang digunakan untuk melakukan analisis kebutuhan, misalnya wawancara, survei, observasi, atau studi kasus. Hasil analisis kebutuhan ini akan dijelaskan secara rinci di bab berikutnya.
-\item   Perancangan solusi berdasarkan hasil analisis kebutuhan. Jelaskan metode atau tahapan perancangan yang digunakan, dengan abstraksi yang bertahap dari generik ke spesifik, misalnya dengan pendekatan \textit{C4 model}. Selain itu, gunakan alat bantu penggambaran diagram yang tepat, misalnya menggunakan diagram UML, SySML, ERD, atau yang lainnya. 
-\item   Jika ada implementasi terhadap hasil rancangan, jelaskan teknologi dan alat bantu yang digunakan untuk mengimplementasikan rancangan. 
-\item   Evaluasi terhadap solusi yang telah diimplementasikan. Jelaskan metode pengujian, metrik evaluasi, atau studi kasus yang digunakan untuk menilai keberhasilan solusi. 
-\item   Penarikan kesimpulan dan saran berdasarkan hasil pelaksanaan tesis berdasarkan hasil evaluasi.   
-\vfill % memaksa konten di atas untuk berada di bagian atas halaman dan menyisakan ruang kosong di bawah konten ini akibat berakhirnya section ini
+    \item \textbf{Investigasi latar belakang:} Mengumpulkan informasi dari beberapa riset relevan terkait \textit{brain-tuning} fMRI pada LLM yang berfungsi sebagai investigasi fakta kebaruan. Fakta tersebut direpresentasikan sebagai celah riset yang potensial untuk pengembangan lanjutan. Selain itu, fakta tersebut juga menjadi basis utama penyusunan rumusan masalah, tujuan, serta hipotesis tugas akhir. 
+    \item \textbf{Studi literatur:} Menelaah sejumlah literatur mengenai sumber daya yang digunakan dalam pengerjaan tugas akhir. Sumber daya tersebut mencakup LLM sebagai model basis, fMRI naturalistik sebagai dataset utama, teknik \textit{fine-tuning} parameter efisien (PEFT) dengan LoRA, mekanisme pengaplikasian \textit{brain-tuning}, skor keselaran beserta representasi per lapisan model dan per ROI, serta \textit{benchmark} yang digunakan dalam mengevaluasi pemahaman semantik dengan tugas hilir. Selain itu, juga tersaji pengetahuan umum yang mendasari riset serta literatur terdahulu sebagai tolok ukur pengerjaan. Literatur diperoleh dari pencarian jurnal Q1 dan Q2 di Scopus dan sejumlah artikel dari berbagai sumber seperti ArXiv, IEEE Xplore, serta arsip terbuka lainnya.
+    \item \textbf{Analisis kebutuhan dan pemilihan solusi:} Menentukan kebutuhan fungsional dan nonfungsional, alternatif dan pemilihan model, strategi \textit{fine-tuning}, dan objektif. Tahapan ini akan dipaparkan secara komprehensif pada Bab \ref{chap:analisis-masalah}.
+    \item \textbf{Perancangan:} Membagi data latih dengan cerita yang tersedia, memilih data validasi penentu \textit{hyperparameter}, menguji data yang belum pernah digunakan, merancang objektif/\textit{loss} gabungan (\textit{loss} model dan otak), dan membangun tiga varian model: (1) \textit{brain-tuning} sebagai \textit{baseline}, serta \textit{fine-tuning} (2) bahasa saja dan (3) fMRI acak sebagai kontrol, dengan penyetaraan komputasi.
+    \item \textbf{Implementasi:} Membangun \textit{pipeline} \textit{fine-tuning} LoRA (dan QLoRA secara opsional untuk model 4--8 miliar parameter) dengan pustaka PyTorch dan Hugging Face (\textit{Transformers} dan PEFT) pada platform Kaggle dengan GPU 16 GB (P100 atau T4). Bobot model diperoleh dari Kaggle Models, sedangkan konfigurasi, versi, dan \textit{random seed} dicatat untuk menjaga reprodusibilitas.
+    \item \textbf{Evaluasi:} Membandingkan \textit{benchmark} pemahaman semantik (STS-B, WiC atau SuperGLUE, RTE atau MNLI, HellaSwag, MMLU, Perplexity), pengujian signifikansi dengan beberapa \textit{seed}, analisis per lapisan model dan per area otak, validasi lintas dataset (opsional), serta pengujian hipotesis (Subbab \ref{chap:pd_hipo}).
+    \item \textbf{Penarikan kesimpulan dan saran:} Menyimpulkan seluruh hasil pengujian terhadap hipotesis serta merumuskan saran strategis untuk penelitian lanjutan.
 \end{enumerate}
+\vfill % memaksa konten di atas berada di bagian atas halaman
 
 % --- Sistematika Penulisan ---
 \section{Sistematika Penulisan}
-Tuliskan gambaran umum isi dari setiap bab yang ada dalam laporan tesis. Sistematika penulisan ini memberikan panduan bagi pembaca tentang struktur dan alur pembahasan dalam laporan tesis. Berikut adalah contoh sistematika penulisan yang dapat diikuti:
+Laporan tugas akhir ini disusun dengan sistematika penulisan sebagai berikut:
 \begin{enumerate}
-\item	Bab I Pendahuluan: Berisi latar belakang, rumusan masalah, tujuan, batasan masalah, metodologi, dan sistematika penulisan laporan tesis       .
-\item	Bab II Studi Literatur: Berisi kajian pustaka yang relevan dengan topik tesis, termasuk teori-teori, konsep-konsep, dan hasil-hasil penelitian sebelumnya yang                mendukung pelaksanaan tesis.
-\item	Bab III Analisis dan Desain: Berisi penjelasan tentang analisis masalah dan kebutuhan pengguna serta berbagai alternatif solusinya.
-\item   Bab IV Perancangan: Berisi penjelasan tentang perancangan solusi yang diusulkan, misalnya arsitektur sistem, desain basis data, antarmuka pengguna, dan sebagainya.
-\item	Bab V Implementasi: Berisi penjelasan tentang proses implementasi solusi yang diusulkan, termasuk langkah-langkah yang diambil, teknologi yang digunakan, dan hasil yang diperoleh.
-\item	Bab VI Evaluasi: Berisi analisis dan evaluasi terhadap solusi yang diimplementasikan, termasuk metode pengujian, hal-hal yang disiapkan sebelum pengujian, hasil pengujian, dan penilaian kinerja.                  
-\item   Bab VII Kesimpulan dan Saran: Berisi kesimpulan dari hasil pelaksanaan tesis dan saran untuk pengembangan lebih lanjut.
-\item   Daftar Pustaka: Berisi daftar referensi yang digunakan dalam penyusunan laporan tesis.
-\item   Lampiran: Berisi dokumen-dokumen pendukung seperti kode program, data lengkap hasil pengujian, rekaman wawancara, dan lain-lain. 
+    \item \textbf{Bab I Pendahuluan:} Berisi latar belakang, rumusan masalah, tujuan, ruang lingkup, asumsi dan batasan, hipotesis, metodologi, serta sistematika laporan.
+    \item \textbf{Bab II Studi Literatur:} Berisi kajian  mengenai pengetahuan kasus, landasan teori (LLM dan \textit{Transformer}, \textit{fine-tuning} dan LoRA, fMRI dan BOLD, \textit{encoding} model, \textit{brain-alignment} dan objektif, analisis per lapis, evaluasi semantik), serta penelitian terkait sebagai penegasan posisi riset tugas akhir ini.
+    \item \textbf{Bab III Analisis Masalah:} Berisi analisis terhadap kondisi aktual, kebutuhan fungsional dan nonfungsional, alternatif solusi, dan pengukuhan solusi akhir.
+    \item \textbf{Bab IV Desain Konsep Solusi:} Berisi konsep solusi terpilih, yaitu alur \textit{brain-tuning} (data, model, dan objektif gabungan \textit{loss}), desain kondisi kontrol, serta rancangan evaluasi dan analisis untuk membuktikan kebenaran tiap hipotesis.
+    \item \textbf{Bab V Rencana Selanjutnya:} Berisi rencana pelaksanaan tugas akhir, tahapan implementasi dan evaluasi, jadwal pengerjaan, serta risiko dan mitigasinya.
+    % \item \textbf{Bab V Implementasi}: Berisi proses implementasi kerangka \textit{fine-tuning} LoRA, teknologi yang digunakan, serta konfigurasi eksperimen.
+    % \item \textbf{Bab IV Perancangan}: Berisi perancangan objektif gabungan \textit{loss} dari bahasa dan \textit{loss} dari penyelarasan otak manusia (\textit{brain-alignment}), serta desain kontrol eksperimen model \textit{brain-tuning}.
+    % \item \textbf{Bab VI Evaluasi:} Berisi metode pengujian, hasil perbandingan model \textit{brain-tuning} dan kontrol, analisis representasi per-lapis, serta pembahasan terhadap hipotesis.
+    % \item \textbf{Bab VII Kesimpulan dan Saran:} Berisi kesimpulan dari hasil tugas akhir dan saran untuk pengembangan lebih lanjut.
+    \item \textbf{Daftar Pustaka:} Berisi daftar referensi yang dipakai guna menyusun laporan.
+    \item \textbf{Lampiran:} Berisi dokumen pendukung yang tidak disertakan dalam naskah utama riset guna menjaga alur baca tanpa mengurangi kelengkapan informasi.
 \end{enumerate}

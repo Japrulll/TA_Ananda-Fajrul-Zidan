@@ -1,0 +1,24 @@
+  \begin{table}[h]
+    \centering
+    \caption{Kebutuhan fungsional kerangka eksperimen \textit{brain-tuning}}
+    \label{tab:am_kf}
+    \small
+    \begin{tabularx}{\textwidth}{p{1.3cm} | X | p{1.5cm}}
+      \hline
+      \textbf{Kode} & \textbf{Kebutuhan} & \textbf{Sumber} \\
+      \hline
+      KF-01 & Memuat data fMRI turunan \textcite{lebel2023natural} dan transkrip berpenanda waktu, menjajarkan kata dengan TR, serta membagi cerita menjadi data latih, validasi, dan uji tanpa kebocoran. & RM1 \\
+      KF-02 & Membentuk fitur dengan penurunan laju fitur kata ke laju TR dan menambahkan penundaan hemodinamik beberapa TR. & RM1 \\
+      KF-03 & Menjalankan \textit{brain-tuning} berbasis LoRA (dan QLoRA pada model 4--8 miliar parameter) dengan proyeksi linear ke ruang \textit{voxel} dan \textit{loss} gabungan $\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{LM}} + \beta\,\mathcal{L}_{\text{otak}}$. & RM1 \\
+      KF-04 & Mengonfigurasi lapis target, \textit{rank} LoRA, jenis objektif otak, dan bobot \textit{loss} $\beta$ tanpa mengubah kode inti. & RM1 \\
+      KF-05 & Menyediakan kondisi kontrol berupa \textit{fine-tuning} bahasa saja dan fMRI acak (per TR dan per blok) dengan komputasi setara. & RM2 \\
+      KF-06 & Mengevaluasi pemahaman semantik hilir (STS-B, WiC, RTE atau MNLI, HellaSwag) dan fungsionalitas (MMLU, \textit{perplexity}). & RM2 \\
+      KF-07 & Memvariasikan $\beta$ dan menghasilkan pemetaan keseimbangan antara keselarasan otak, skor semantik, dan kemampuan umum. & RM2 \\
+      KF-08 & Menghitung \textit{brain score} per lapis dan per ROI melalui \textit{voxelwise encoding model}, serta skor \textit{alignment} hierarki. & RM3 \\
+      KF-09 & Menghitung CKA per lapis antara model awal dan model \textit{tuning}. & RM3 \\
+      KF-10 & Melakukan dekomposisi variansi untuk pemisahan kontribusi fitur teks rendah dari info semantik sebelum dan sesudah \textit{tuning}. & RM3 \\
+      KF-11 & Menjalankan setiap kondisi pada beberapa \textit{random seed} dan melakukan uji statistik berpasangan. & RM2 \\
+      KF-12 & \textit{(Opsional)} Analisis tingkat \textit{attention head} atau penonaktifan LoRA per lapis, serta evaluasi lintas dataset pada \textit{Narratives}. & RM3 \\
+      \hline
+    \end{tabularx}
+  \end{table}

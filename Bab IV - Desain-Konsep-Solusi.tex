@@ -1,0 +1,266 @@
+% ==========================================
+% BAB IV DESAIN KONSEP SOLUSI
+% ==========================================
+\chapter{DESAIN KONSEP SOLUSI}
+\label{chap:desain-konsep-solusi}
+% Ilustrasikan desain konsep solusi dalam bentuk model konseptual dan penjelasan secara ringkas, 
+% beserta perbedaannya dengan sistem saat ini. Ilustrasi harus dapat dibandingkan (\textit{before} and \textit{after}). 
+% Karena masih berupa proposal, bab ini hanya berisi gambar desain konsep solusi tersebut dan 
+% penjelasan perbandingannya dengan gambar sistem yang ada saat ini (yang tergambar di awal Bab \ref{chap:analisis-masalah}).
+
+% ============================================================================================
+% BAB IV DESAIN KONSEP SOLUSI
+% ============================================================================================
+Bab ini menjabarkan rancangan terperinci dari solusi terpilih pada Bab \ref{chap:analisis-masalah} untuk menjawab rumusan masalah (RM1--RM3) dan menguji hipotesis (H1--H5) pada Bab \ref{chap:pendahuluan}. Pembahasan mencakup arsitektur model konseptual solusi yang diusulkan beserta perbandingannya terhadap alur yang ada, rancangan pemrosesan data dan pembentukan fitur, perancangan model beserta objektif gabungan dan sapuan bobot $\beta$, desain kontrol eksperimen, serta rancangan evaluasi tugas hilir dan analisis representasi internal.
+
+% ============================================================================================
+\section{Arsitektur dan Model Konseptual Solusi yang Diusulkan}
+\label{sec:ds_arsitektur}
+
+Berdasarkan hasil pemilihan solusi pada Subbab \ref{sub:am_penentuan}, kerangka eksperimen dirancang sebagai pengembangan langsung dari model konseptual alur \textit{brain-tuning} yang ada (Subbab \ref{sub:am_konseptual}). Tata letak lima subsistem utama tetap dipertahankan agar perbandingan antara kondisi sebelum dan sesudah perancangan dapat diamati secara langsung, dengan penambahan satu subsistem baru, yaitu \textbf{Subsistem Analisis Internal}, serta pembaruan mekanisme pada subsistem penyelarasan, kontrol, dan evaluasi.
+
+Gambar \ref{fig:ds_konseptual} mengilustrasikan model konseptual alur \textit{brain-tuning} yang diusulkan. Komponen dan alur yang merupakan pembaruan atau penambahan ditandai dengan garis putus-putus berwarna biru, meliputi: (1) tiga kondisi pelatihan dengan kontrol terstandar, (2) pembaruan berbasis LoRA hingga lapisan target $\ell^*$ disertai kepala proyeksi linear $W_p$ dan \textit{loss} gabungan ($\mathcal{L}_{\text{LM}} + \beta\,\mathcal{L}_{\text{otak}}$), (3) mekanisme sapuan nilai $\beta$ untuk pemetaan keseimbangan, serta (4) subsistem analisis internal yang mencakup perubahan CKA antar-lapisan, skor hierarki kortikal, dan dekomposisi variansi fitur tingkat rendah.
+
+\begin{figure}[h]
+  \centering
+  \caption{Model konseptual \textit{brain-tuning} yang diusulkan (garis putus-putus berwarna adalah komponen baru dan pembaruan terhadap alur yang ada)}
+  \label{fig:ds_konseptual}
+  \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=0.8cm and 0.9cm,
+        every node/.style={font=\scriptsize},
+        existing/.style={
+        rectangle, rounded corners=3pt, draw=black!70, thick, fill=gray!6,
+        text width=3.85cm, minimum height=2.35cm, align=left, inner sep=5pt
+        },
+        proposed/.style={
+        rectangle, rounded corners=3pt, draw=blue!75!black, dashed, very thick, fill=blue!5,
+        text width=3.85cm, minimum height=2.35cm, align=left, inner sep=5pt
+        },
+        subbox/.style={
+        rectangle, rounded corners=2pt, draw=blue!70!black, dashed, thick, fill=white,
+        inner sep=2.5pt, font=\fontsize{6.5}{7.5}\selectfont, align=left
+        },
+        arr/.style={-{Stealth[length=2mm]}, thick, draw=black!75},
+        arrnew/.style={-{Stealth[length=2mm]}, thick, dashed, draw=blue!75!black}
+    ]
+
+        % --- BARIS ATAS: ALUR UTAMA ---
+        \node[existing] (s1) {
+        \textbf{1. Subsistem Data Stimulus \& Otak}\\[2pt]
+        $\bullet$ Dataset \textcite{lebel2023natural} (8 subjek)\\
+        $\bullet$ Transkrip berpenanda waktu\\
+        $\bullet$ Sinyal BOLD fMRI ($\text{TR}=2{,}0\text{ s}$)\\
+        \tikz[baseline]\node[subbox]{Pembagian cerita: 22 latih, 4 val, 1 uji};
+        };
+
+        \node[existing, right=of s1] (s2) {
+        \textbf{2. Subsistem Pembentukan Fitur}\\[2pt]
+        $\bullet$ Ekstraksi token terakhir kata $k$\\
+        $\bullet$ \textit{Downsampling} Lanczos ke TR\\
+        $\bullet$ Penundaan FIR $t-1\dots t-4$ (Pers. \ref{eq:fir})\\
+        \tikz[baseline]\node[subbox]{\textit{Hidden state} lapisan target $\ell^*$};
+        };
+
+        \node[proposed, right=of s2] (s3) {
+        \textbf{3. Subsistem Penyelarasan}\\[2pt]
+        $\bullet$ LoRA atensi lapisan $\ell \le \ell^*$ + $W_p$\\
+        $\bullet$ $\mathcal{L}_{\text{LM}} + \beta\,\mathcal{L}_{\text{otak}}$ (Kosinus, NT-Xent; ablasi MSE)\\
+        $\bullet$ \textbf{Sapuan bobot $\beta$} (skala log)
+        };
+
+        % --- BARIS BAWAH: KONTROL, EVALUASI, ANALISIS INTERNAL ---
+        \node[proposed, below=1.05cm of s1] (s5) {
+        \textbf{5. Subsistem Kontrol}\\[2pt]
+        \textbf{Tiga kondisi setara komputasi:}\\
+        (1) Bahasa saja ($\beta = 0$)\\
+        (2) fMRI asli ($\beta > 0$)\\
+        (3) fMRI acak (\textit{TR-} \& \textit{block-shuffled})
+        };
+
+        \node[existing, below=1.05cm of s2] (s4) {
+        \textbf{4. Subsistem Evaluasi}\\[2pt]
+        $\bullet$ \textit{Brain score} ($\rho_v / c_v$, Pers. \ref{eq:pearson})\\
+        $\bullet$ Semantik: STS-B, WiC, RTE/MNLI, HellaSwag\\
+        $\bullet$ Umum: MMLU, \textit{Perplexity}
+        };
+
+        \node[proposed, below=1.05cm of s3] (s6) {
+        \textbf{6. Subsistem Analisis Internal}\\[2pt]
+        $\bullet$ $\Delta s_{\ell,q}$ per lapisan \& ROI korteks\\
+        $\bullet$ Perubahan $1-\text{CKA}$ ($\ell \le \ell^*$ vs $> \ell^*$)\\
+        $\bullet$ Skor hierarki $H$ (eksploratori)\\
+        $\bullet$ Dekomposisi variansi fitur rendah ($f$)
+        };
+
+        % --- PANAH INTERAKSI ---
+        \draw[arr] (s1.east) -- node[above, font=\fontsize{6}{7}\selectfont]{Teks} (s2.west);
+        \draw[arr] (s2.east) -- node[above, font=\fontsize{6}{7}\selectfont]{$X_t^{\text{delay}}$} (s3.west);
+
+        % Sinyal BOLD dari S1 ke S3 melalui celah tengah
+        \draw[arr] ([yshift=-3pt]s1.south east) -- ++(0,-0.32) -| node[pos=0.25, above, font=\fontsize{6}{7}\selectfont]{Sinyal BOLD $y_t$} ([xshift=-12pt]s3.south);
+
+        % S5 (Kontrol) ke S3 (Penyelarasan)
+        \draw[arrnew] (s5.north east) -- ++(0,0.42) -| node[pos=0.25, below, font=\fontsize{6}{7}\selectfont, text=blue!75!black]{3 kondisi} ([xshift=-26pt]s3.south);
+
+        % S3 ke S4 (Evaluasi)
+        \draw[arr] ([xshift=-8pt]s3.south) -- ++(0,-0.48) -| node[pos=0.25, below, font=\fontsize{6}{7}\selectfont]{Model terlatih} (s4.north);
+
+        % S3 ke S6 (Analisis Internal)
+        \draw[arrnew] ([xshift=16pt]s3.south) -- node[right, font=\fontsize{6}{7}\selectfont, text=blue!75!black]{$X_\ell^{\text{tuned}}$} ([xshift=16pt]s6.north);
+
+        % S4 ke S6
+        \draw[arrnew] (s4.east) -- node[above, font=\fontsize{6}{7}\selectfont, text=blue!75!black]{$s_{\ell,q}, \hat{W}$} (s6.west);
+
+        % --- LEGENDA ---
+        \node[below=0.25cm of s4, font=\fontsize{6.5}{7.5}\selectfont] (leg) {
+        \tikz[baseline=-0.5ex]\draw[black!70, thick, fill=gray!6] (0,0) rectangle (0.35,0.2); Komponen eksisting \quad
+        \tikz[baseline=-0.5ex]\draw[blue!75!black, dashed, very thick, fill=blue!5] (0,0) rectangle (0.35,0.2); Komponen baru / dimodifikasi
+        };
+
+    \end{tikzpicture}
+  }
+\end{figure}
+
+Secara fungsional, interaksi antarsubsistem bergerak dari penyiapan pasangan stimulus--respons hingga pembuktian hipotesis secara kuantitatif. Pembandingan rinci antara kondisi sebelum dan rancangan perubahan pada tiap subsistem beserta keterkaitannya dengan rumusan masalah (RM) dan hipotesis (H) dirangkum pada Tabel \ref{tab:ds_perbandingan_subsistem}.
+
+\begin{table}[h]
+  \centering
+  \caption{Perbandingan alur sebelum dan rancangan solusi yang diusulkan per subsistem}
+  \label{tab:ds_perbandingan_subsistem}
+  \small
+  \begin{tabularx}{\textwidth}{p{2.5cm} | p{3.7cm} | p{4.6cm} | X}
+    \hline
+    \textbf{Subsistem} & \textbf{Kondisi Sebelum (Eksisting)} & \textbf{Perubahan / Rancangan Solusi} & \textbf{RM / H} \\
+    \hline
+    1. Data stimulus \& sinyal otak & Rekaman fMRI naturalistik dan transkrip berpenanda waktu; pembagian data beragam antarstudi. & Menggunakan dataset \textcite{lebel2023natural} dengan pemisahan ketat berbasis cerita (22 latih, 4 validasi, 1 uji) serta filter \textit{noise ceiling} $c_v > 0{,}1$; \textcite{nastase2021narratives} sebagai validasi opsional. & RM1 \\
+    \hline
+    2. Pembentukan fitur & Ekstraksi \textit{hidden state} dari seluruh lapisan atau lapisan tetap, lalu \textit{downsampling} dan FIR \textit{delay}. & Penentuan lapisan target $\ell^*$ secara empiris dari kandidat lapisan tengah model awal; pengambilan token terakhir per kata sebelum \textit{downsampling} Lanczos dan FIR 4 TR (Persamaan \ref{eq:fir}). & RM1, H3 \\
+    \hline
+    3. Penyelarasan (\textit{brain-tuning}) & \textit{Full fine-tuning} pada model kecil atau LoRA pada lapisan tengah dengan satu objektif dan bobot tetap. & Pemasangan LoRA pada proyeksi atensi lapisan $\ell \le \ell^*$ beserta kepala proyeksi linear $W_p$; objektif gabungan (Persamaan \ref{eq:hybrid}) dengan Kosinus dan NT-Xent sebagai utama (MSE ablasi sekunder) serta sapuan bobot $\beta$. & RM1, RM2, H2 \\
+    \hline
+    4. Evaluasi & Terbatas pada skor \textit{encoding} global atau rata-rata tugas hilir tanpa pemisahan tugas bervalidasi kecil. & Pemisahan evaluasi pemahaman semantik (STS-B, WiC, RTE/MNLI via \textit{probing} 5 \textit{seed}; HellaSwag) dari fungsionalitas umum (MMLU, \textit{Perplexity}); pelaporan skor per tugas. & RM2, H1, H2 \\
+    \hline
+    5. Kontrol & Sebagian studi memakai kontrol bahasa saja atau pengacakan sinyal secara terpisah. & Penyetaraan tiga kondisi pelatihan (bahasa saja $\beta=0$, fMRI asli $\beta>0$, serta fMRI acak \textit{TR-shuffled} dan \textit{block-shuffled}) dengan teks, langkah, dan \textit{seed} identik. & RM2, H1, H5 \\
+    \hline
+    6. Analisis internal \textit{(Baru)} & Belum tersedia pada alur \textit{brain-tuning} LLM teks \textit{decoder}. & Kuantifikasi perubahan per lapisan dan ROI ($\Delta s_{\ell,q}$), pergeseran representasi $1-\text{CKA}$ ($\ell \le \ell^*$ vs $> \ell^*$), skor hierarki $H$, dan dekomposisi variansi fitur tingkat rendah $f$. & RM3, H3, H4, H5 \\
+    \hline
+  \end{tabularx}
+\end{table}
+
+% ============================================================================================
+\section{Rancangan Data dan Pemrosesan Fitur Stimulus--Otak}
+\label{sec:ds_data}
+
+Rancangan data memastikan keselarasan temporal antara stimulus teks dan sinyal BOLD fMRI, dan mencegah bocornya informasi antarpartisi eksperimen (KNF-04).
+
+\begin{enumerate}
+  \item \textbf{Partisi data berbasis cerita.} Sebanyak 27 cerita siniar pada dataset \textcite{lebel2023natural} dipisahkan secara utuh pada tingkat cerita menjadi 22 cerita latih, 4 cerita validasi (untuk pemilihan lapisan target $\ell^*$, koefisien regulasi \textit{ridge} $\lambda$, dan kalibrasi rentang $\beta$), serta 1 cerita uji yang direkam berulang pada 5 sesi. Partisi tingkat cerita wajib diterapkan karena penundaan hemodinamik FIR menggabungkan 4 TR berurutan sehingga pemisahan acak per TR akan menimbulkan kebocoran korelasi temporal.
+  \item \textbf{Seleksi \textit{voxel} dan pemetaan ROI.} Untuk setiap partisipan ($N=8$), reliabilitas setiap \textit{voxel} dihitung melalui \textit{noise ceiling} $c_v$ sebagai rerata korelasi Pearson berpasangan antar-ulangan pada cerita uji 5 sesi. Hanya \textit{voxel} dengan $c_v > 0{,}1$ yang dipertahankan (dengan analisis sensitivitas pada ambang $0{,}05$ dan $0{,}2$). Himpunan \textit{voxel} ini dikunci sebelum pelatihan dan dikelompokkan ke dalam wilayah minat (\textit{Region of Interest}, ROI) sesuai hierarki pemrosesan bahasa kortikal pada Subbab \ref{sub:sl_otak}: korteks auditori primer sebagai pembanding tingkat rendah, serta area bahasa tingkat tinggi yang meliputi STS, MTG/ITG, ATL, dan IFG.
+  \item \textbf{Alur pembentukan fitur stimulus.} Transkrip cerita berpenanda waktu diumpankan ke LLM dalam jendela konteks kausal. Untuk setiap kata $k$, diambil \textit{hidden state} token subkata terakhir $h_k^{(\ell^*)}$ pada lapisan target $\ell^*$ karena token terakhir pada arsitektur \textit{decoder} merangkum konteks kausal sebelumnya. Deret fitur tingkat kata tersebut kemudian diturunkan ke laju akuisisi fMRI ($\text{TR} = 2{,}0\text{ detik}$) menggunakan konvolusi filter Lanczos ($0{,}25\text{ Hz}$), lalu dikonstruksi menjadi vektor fitur berpenundaan $X_t^{\text{delay}} = [x_{t-1};\, x_{t-2};\, x_{t-3};\, x_{t-4}]$ sesuai Persamaan \ref{eq:fir} untuk menangkap jeda hemodinamik 2--8 detik.
+\end{enumerate}
+
+% ============================================================================================
+\section{Rancangan Model, Lapisan Target, dan Objektif Gabungan}
+\label{sec:ds_model_objektif}
+
+\subsection{Konfigurasi Model Dasar dan Adapter PEFT}
+\label{sub:ds_model}
+
+Eksperimen difokuskan pada LLM teks \textit{decoder-only} berukuran menengah dengan model utama \textbf{Qwen3-4B} (4B parameter) dan model pembanding \textbf{Llama-3-8B} atau \textbf{Llama-3.1-8B} (8B parameter), serta \textbf{Mistral-7B} sebagai model opsional (KNF-08). Seluruh model dilatih menggunakan mekanisme PEFT (Subbab \ref{sub:sl_finetuning}) agar tetap berjalan dalam batas memori VRAM 16 GB (KNF-01):
+\begin{itemize}
+  \item \textbf{LoRA (presisi 16-bit):} diterapkan sebagai konfigurasi utama pada model berukuran hingga 4B parameter, dengan modul adapter pada matriks proyeksi modul \textit{self-attention} ($W^Q, W^K, W^V, W^O$) sesuai Persamaan \ref{eq:multihead} dan \ref{eq:lora}.
+  \item \textbf{QLoRA (kuantisasi 4-bit NormalFloat):} disiapkan sebagai opsi pembaruan untuk model berukuran 4--8B parameter \autocite{dettmers2023qloraefficientfinetuningquantized} jika kebutuhan memori dan gradien dalam presisi 16-bit melampaui kapasitas 16 GB.
+\end{itemize}
+
+\subsection{Pemilihan Lapisan Target ($\ell^*$) dan Kepala Proyeksi}
+\label{sub:ds_lapisan}
+
+Penentuan lapisan target dilakukan dalam dua tahap sebelum pelatihan utama:
+\begin{enumerate}
+  \item \textbf{Pemindaian lapisan pada model awal.} Model awal (\textit{pretrained} tanpa \textit{tuning}) dievaluasi pada cerita validasi menggunakan \textit{voxelwise encoding model} (Persamaan \ref{eq:ridge}--\ref{eq:pearson}) untuk tiap lapisan $\ell \in \{1, \dots, L\}$. Lapisan $\ell^*$ dipilih dari kandidat sepertiga hingga dua pertiga kedalaman jaringan (lapisan tengah) yang memperoleh rerata \textit{brain score} validasi tertinggi, selaras dengan hierarki representasi semantik pada \textcite{mischler2024contextual} dan \textcite{xiao2026beyond}.
+  \item \textbf{Cakupan pemasangan LoRA ($\ell \le \ell^*$).} Selama \textit{brain-tuning}, fitur berpenundaan $X_t^{\text{delay}}$ diekstrak dari lapisan $\ell^*$ dan dipetakan ke ruang \textit{voxel} partisipan melalui kepala proyeksi linear $\hat{y}_t = W_p X_t^{\text{delay}} + b$ (Persamaan \ref{eq:proyeksi}). Karena gradien dari \textit{loss} otak hanya merambat mundur dari lapisan $\ell^*$ ke lapisan-lapisan di bawahnya, adapter LoRA dipasang pada proyeksi atensi seluruh lapisan dari lapisan pertama hingga lapisan $\ell^*$ ($\ell \le \ell^*$). Lapisan di atas $\ell^*$ ($\ell > \ell^*$) dibiarkan tanpa adapter sehingga perubahan representasinya murni mencerminkan propagasi tak langsung, yang kemudian diuji melalui H3. Kepala proyeksi $W_p$ dilatih bersama parameter LoRA selama fase \textit{brain-tuning} dan dilepas saat fase evaluasi hilir maupun pengujian \textit{encoding} independen.
+\end{enumerate}
+
+\subsection{Objektif Gabungan dan Sapuan Bobot $\beta$}
+\label{sub:ds_objektif}
+
+Pembaruan parameter adapter LoRA dan kepala proyeksi $W_p$ dikendalikan oleh fungsi objektif gabungan pada Persamaan \ref{eq:hybrid}:
+\begin{equation*}
+  \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{LM}} + \beta\, \mathcal{L}_{\text{otak}}
+\end{equation*}
+dengan $\mathcal{L}_{\text{LM}}$ berupa \textit{cross-entropy loss} prediksi token berikutnya pada transkrip cerita latih untuk mempertahankan kompetensi bahasa model. Untuk komponen $\mathcal{L}_{\text{otak}}$, digunakan dua fungsi objektif utama yang invarian terhadap skala respons \textit{voxel}:
+\begin{enumerate}
+  \item \textbf{Cosine Loss ($\mathcal{L}_{\text{cos}}$, Persamaan \ref{eq:cosine}):} memaksimalkan keselarasan arah vektor antara prediksi $\hat{y}_i$ dan respons BOLD target $y_i$ pada setiap langkah waktu dengan rentang nilai berbatas $[0, 2]$.
+  \item \textbf{NT-Xent Loss ($\mathcal{L}_{\text{NT-Xent}}$, Persamaan \ref{eq:ntxent}):} memberikan pembelajaran kontrastif dengan memperlakukan pasangan $(\hat{y}_i, y_i)$ pada TR yang bersesuaian sebagai pasangan positif dan pasangan pada TR lain dalam \textit{mini-batch} sebagai sampel negatif, dengan parameter temperatur $\tau$ (nilai awal $\tau = 0{,}1$ yang dikalibrasi pada uji pendahuluan).
+\end{enumerate}
+Sementara itu, \textbf{Mean Squared Error ($\mathcal{L}_{\text{MSE}}$, Persamaan \ref{eq:mse})} ditempatkan sebagai objektif sekunder (ablasi pembanding) apabila anggaran komputasi memungkinkan setelah seluruh eksperimen utama selesai.
+
+Untuk memetakan keseimbangan antara keselarasan otak, peningkatan pemahaman semantik, dan stabilitas fungsionalitas umum model (H2), dilakukan \textbf{sapuan (\textit{sweep}) koefisien $\beta$} pada skala logaritmik yang mencakup titik nol hingga dominasi sinyal otak, yaitu $\beta \in \{0;\, 0{,}01;\, 0{,}05;\, 0{,}1;\, 0{,}5;\, 1{,}0;\, 5{,}0;\, 10{,}0\}$ (rentang akhir disesuaikan dengan hasil uji pendahuluan pada Qwen3-4B). Pada setiap titik $\beta$, dicatat \textit{brain score} uji, rerata skor tugas semantik, akurasi MMLU, dan \textit{perplexity} untuk mengidentifikasi rentang nilai $\beta$ optimal sebelum penurunan fungsionalitas terjadi.
+
+% ============================================================================================
+\section{Desain Kondisi Kontrol Eksperimen}
+\label{sec:ds_kontrol}
+
+Dirancang 3 kondisi pelatihan dengan komputasi, korpus transkrip, \textit{rank} LoRA, laju belajar, ukuran \textit{batch}, langkah pembaruan, dan \textit{random seed} setara (RM2, KNF-03):
+
+\begin{enumerate}
+  \item \textbf{Kondisi Kontrol Bahasa Saja (\textit{Language-Only Fine-Tuning}, $\beta = 0$).} Model hanya dilatih menggunakan $\mathcal{L}_{\text{LM}}$ pada transkrip 22 cerita latih tanpa sinyal otak. Kondisi ini berfungsi sebagai tolok ukur untuk mengisolasi pengaruh adaptasi teks naratif terhadap tugas hilir dan pergeseran representasi CKA.
+  \item \textbf{Kondisi Perlakuan Utama (\textit{Real fMRI Brain-Tuning}, $\beta > 0$).} Model dilatih dengan objektif gabungan $\mathcal{L}_{\text{LM}} + \beta\,\mathcal{L}_{\text{otak}}$ menggunakan pasangan stimulus dan respons BOLD asli $y_t^{\text{asli}}$ per partisipan.
+  \item \textbf{Kondisi Kontrol fMRI Acak (\textit{Shuffled fMRI Brain-Tuning}, $\beta > 0$).} Model dilatih dengan persamaan dan nilai $\beta$ yang persis sama dengan kondisi kedua, tetapi urutan temporal respons BOLD latih diacak sehingga korespondensi antara kata dan aktivitas otak hilang:
+  \begin{itemize}
+    \item \textit{Pengacakan per TR (\textit{TR-shuffled}, kontrol acak utama):} indeks waktu $t$ pada matriks respons $Y_{\text{latih}}$ dipermutasi secara acak dengan permutasi yang seragam di seluruh \textit{voxel} \autocite{negi2025brain}. Metode ini mempertahankan distribusi marginal nilai BOLD tiap \textit{voxel}, tetapi memutus autokorelasi temporal dan keterkaitan dengan stimulus.
+    \item \textit{Pengacakan per blok (\textit{block-shuffled}, kontrol acak sekunder):} respons latih dipotong menjadi segmen berdurasi tetap yang lebih panjang dari jendela penundaan hemodinamik ($> 8\text{ detik}$, misalnya 10 TR atau $20\text{ detik}$) lalu urutan antarblok diacak. Kontrol sekunder ini dijalankan pada model utama dan satu nilai $\beta$ terpilih untuk memverifikasi bahwa simpulan tidak bergantung pada hilangnya struktur autokorelasi lokal akibat pengacakan per TR.
+  \end{itemize}
+\end{enumerate}
+
+% Seluruh kondisi dievaluasi pada cerita uji menggunakan sinyal fMRI asli yang tidak diacak.
+
+% ============================================================================================
+\section{Rancangan Evaluasi Hilir dan Analisis Representasi Internal}
+\label{sec:ds_evaluasi_analisis}
+
+Tahap evaluasi dan analisis dirancang secara terstruktur untuk menguji kelima hipotesis penelitian secara kuantitatif.
+
+\subsection{Evaluasi Tugas Hilir dan Fungsionalitas Model (H1 dan H2)}
+\label{sub:ds_eval_hilir}
+
+Setelah pelatihan selesai, adapter LoRA digabungkan atau dipertahankan dalam mode inferensi beku tanpa pembaruan bobot lebih lanjut, lalu dievaluasi pada dua kelompok tolok ukur (Tabel \ref{tab:sl_downstream}):
+\begin{itemize}
+  \item \textbf{Pengujian H1 (Pemahaman Semantik Hilir):} Pada tugas klasifikasi dan regresi pasangan kalimat (STS-B, WiC, serta RTE atau MNLI), digunakan protokol \textit{linear probing} dengan melatih kepala klasifikasi/regresi linear di atas representasi lapisan terakhir pada 5 \textit{random seed} berbeda untuk menekan variansi inisialisasi kepala. Untuk HellaSwag, evaluasi dilakukan secara deterministik menggunakan rerata \textit{log-likelihood} kandidat jawaban (Persamaan \ref{eq:ll}). Skor kondisi fMRI asli dibandingkan secara berpasangan terhadap kondisi $\beta = 0$ dan kondisi fMRI acak.
+  \item \textbf{Pengujian H2 (Pemetaan Keseimbangan dan Fungsionalitas Umum):} Pada setiap nilai sapuan $\beta$, kemampuan pengetahuan umum diukur dengan MMLU (Persamaan \ref{eq:ll}) dan kelancaran pemodelan bahasa diukur dengan \textit{Perplexity} pada korpus uji (Persamaan \ref{eq:ppl_w}). Hasilnya diplot bersama kurva kenaikan \textit{brain score} dan skor semantik terhadap $\beta$ untuk membuktikan keberadaan jendela operasi aman.
+\end{itemize}
+
+\subsection{Analisis Perubahan Representasi Internal (H3, H4, dan H5)}
+\label{sub:ds_analisis_internal}
+
+Untuk menjawab RM3 mengenai mekanisme internal di balik perubahan perilaku model, diterapkan empat analisis kuantitatif pada cerita uji:
+\begin{enumerate}
+  \item \textbf{Pergeseran Representasi Antar-lapisan via CKA (Pengujian H3).} Untuk setiap lapisan $\ell \in \{1, \dots, L\}$, matriks representasi cerita uji dari model awal ($X_\ell^{\text{awal}}$) dan model pascapelatihan ($X_\ell^{\text{tuned}}$) dibandingkan menggunakan CKA linear (Persamaan \ref{eq:cka}) untuk memperoleh besaran perubahan $\Delta_\ell = 1 - \mathrm{CKA}(X_\ell^{\text{awal}}, X_\ell^{\text{tuned}})$ (Persamaan \ref{eq:delta_cka}). Rerata $\Delta_\ell$ pada kelompok lapisan yang mendapat gradien otak langsung ($\ell \le \ell^*$) dibandingkan terhadap kelompok lapisan di atasnya ($\ell > \ell^*$), serta dibandingkan terhadap nilai $\Delta_\ell$ pada kontrol bahasa saja ($\beta = 0$).
+  \item \textbf{Perubahan Keselarasan per ROI dan Skor Hierarki (Pengujian H4).} \textit{Encoding model} independen dilatih ulang pada 22 cerita latih dan diuji pada cerita uji untuk setiap lapisan $\ell$ dan kondisi model. Selisih keselarasan $\Delta s_{\ell^*, q} = s^{\text{tuned}}_{\ell^*, q} - s^{\text{awal}}_{\ell^*, q}$ dihitung per partisipan dan diringkas dengan median per ROI. Kenaikan pada jaringan bahasa tingkat tinggi (STS, MTG/ITG, ATL, IFG) diuji secara berpasangan terhadap kenaikan pada korteks auditori primer. Sebagai analisis eksploratori tambahan, dihitung skor keselarasan hierarki $H = \mathrm{corr}(\mathrm{COM}_q, d_q)$ melalui Persamaan \ref{eq:norm}--\ref{eq:hierarki} untuk mengamati apakah pusat massa lapisan bergeser sejalan dengan jarak kortikal $d_q$.
+  \item \textbf{Dekomposisi Variansi Fitur Tingkat Rendah (Pengujian H5).} Menggunakan \textit{banded ridge regression} \autocite{nunez2019banded} dengan penalti terpisah $\lambda_g$ per kelompok fitur, dibangun dua model prediksi BOLD pada cerita uji: model hanya dengan fitur teks tingkat rendah (panjang kata, frekuensi kata, posisi kata dalam kalimat, serta \textit{embedding} statis tanpa konteks) dan model gabungan yang menyertakan \textit{hidden state} lapisan $\ell^*$. Porsi variansi yang dijelaskan fitur tingkat rendah dihitung sebagai $f = R^2_{\text{rendah}} / R^2_{\text{gabungan}}$ (Persamaan \ref{eq:porsi}). Penurunan nilai $f$ setelah \textit{brain-tuning} fMRI asli dibandingkan terhadap perubahan nilai $f$ pada kondisi fMRI acak.
+\end{enumerate}
+
+Keterkaitan antara hipotesis, metrik pengukuran, kondisi pembanding, dan kriteria pembuktiannya dirangkum pada Tabel \ref{tab:ds_matriks_hipotesis}. Rancangan konseptual beserta matriks evaluasi pada bab ini menjadi acuan penyusunan lingkungan implementasi, protokol verifikasi dan validasi statistik, jadwal kerja, serta mitigasi risiko pada Bab \ref{chap:rencana-selanjutnya}.
+
+\begin{table}[h]
+  \centering
+  \caption{Matriks rancangan evaluasi dan pembuktian hipotesis penelitian}
+  \label{tab:ds_matriks_hipotesis}
+  \small
+  \begin{tabularx}{\textwidth}{p{1.2cm} | p{3.6cm} | p{3.3cm} | X}
+    \hline
+    \textbf{Hipo.} & \textbf{Metrik \& Persamaan} & \textbf{Pembanding} & \textbf{Kriteria Dukungan Hipotesis} \\
+    \hline
+    H1 & Skor STS-B, WiC, RTE/MNLI (\textit{probing} 5 \textit{seed}), HellaSwag (Persamaan \ref{eq:ll}) & fMRI asli vs bahasa saja ($\beta=0$) dan fMRI acak & Skor tugas semantik pada fMRI asli lebih tinggi secara signifikan ($p < 0{,}05$ terkoreksi FDR) daripada kedua kontrol. \\
+    \hline
+    H2 & \textit{Brain score} (Persamaan \ref{eq:pearson}), MMLU (Persamaan \ref{eq:ll}), \textit{Perplexity} (Persamaan \ref{eq:ppl_w}) & Kurva metrik lintas sapuan bobot $\beta$ terhadap $\beta=0$ & Ditemukan rentang $\beta > 0$ dengan kenaikan \textit{brain score} tanpa penurunan berarti MMLU/\textit{Perplexity}, sedangkan $\beta$ besar menurunkannya. \\
+    \hline
+    H3 & Perubahan representasi $\Delta_\ell = 1 - \mathrm{CKA}$ (Persamaan \ref{eq:cka}--\ref{eq:delta_cka}) & Kelompok $\ell \le \ell^*$ vs $\ell > \ell^*$; fMRI asli vs $\beta=0$ & Rerata $\Delta_\ell$ pada $\ell \le \ell^*$ lebih besar secara signifikan daripada $\ell > \ell^*$ dan lebih besar daripada kontrol $\beta=0$. \\
+    \hline
+    H4 & Selisih \textit{brain score} $\Delta s_{\ell^*, q}$ per ROI; skor hierarki $H$ (Persamaan \ref{eq:norm}--\ref{eq:hierarki}) & ROI tingkat tinggi (STS, MTG/ITG, ATL, IFG) vs auditori primer & $\Delta s_{\ell^*, q}$ pada ROI tingkat tinggi lebih besar secara signifikan daripada korteks auditori primer lintas partisipan. \\
+    \hline
+    H5 & Porsi variansi fitur rendah $f = R^2_{\text{rendah}} / R^2_{\text{gabungan}}$ (Persamaan \ref{eq:porsi}) & Sebelum vs sesudah \textit{tuning}; fMRI asli vs fMRI acak & Nilai $f$ menurun setelah \textit{brain-tuning} fMRI asli dan penurunannya lebih besar dibandingkan kondisi fMRI acak. \\
+    \hline
+  \end{tabularx}
+\end{table}
